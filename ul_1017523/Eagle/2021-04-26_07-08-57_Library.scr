@@ -1,0 +1,142 @@
+# Created by Ultra Librarian Gold 8.3.292 Copyright © 1999-2018
+# Frank Frank, Accelerated Designs
+
+Grid mil;
+Set Wire_Bend 2;
+
+
+Edit 'CONN_1017516.pac';
+Change Drill 67;
+Pad '1' Round 0 87 R0 (0 0);
+Change Drill 67;
+Pad '2' Round 0 87 R0 (250 -374);
+Change Drill 67;
+Pad '3' Round 0 87 R0 (500 0);
+Change Drill 67;
+Pad '4' Round 0 87 R0 (750 -374);
+Layer 21;
+Wire 6 (-154 -718) (904 -718);
+Wire 6 (904 -718) (904 117);
+Wire 6 (904 117) (-154 117);
+Wire 6 (-154 117) (-154 -718);
+Wire 20 (-164 0) -180 (-194 0);
+Wire 20 (-194 0) -180 (-164 0);
+Layer 51;
+Wire 6 (-148 -713) (898 -713);
+Wire 6 (898 -713) (898 112);
+Wire 6 (898 112) (-148 112);
+Wire 6 (-148 112) (-148 -713);
+Wire 20 (15 -75) -180 (-15 -75);
+Wire 20 (-15 -75) -180 (15 -75);
+Layer 22;
+Wire 20 (-164 0) -180 (-194 0);
+Wire 20 (-194 0) -180 (-164 0);
+Layer 25;
+Change Size 50;
+Change Ratio 6;
+Text '>Name' SR0 (246 -399);
+Layer 27;
+Change Size 50;
+Change Ratio 6;
+Text '>Value' SR0 (307 -399);
+
+Edit 'CONN_4P_1.sym';
+Layer 94;
+Pin '1' Pas None Middle R0 Pad 0 (0 0)
+Pin '2' Pas None Middle R0 Pad 0 (0 -100)
+Pin '3' Pas None Middle R0 Pad 0 (0 -200)
+Pin '4' Pas None Middle R0 Pad 0 (0 -300)
+Wire 6 (400 0) (200 0);
+Wire 6 (400 -100) (200 -100);
+Wire 6 (400 -200) (200 -200);
+Wire 6 (400 -300) (200 -300);
+Wire 6 (400 0) (350 33);
+Wire 6 (400 -100) (350 -67);
+Wire 6 (400 -200) (350 -167);
+Wire 6 (400 -300) (350 -267);
+Wire 6 (400 0) (350 -33);
+Wire 6 (400 -100) (350 -133);
+Wire 6 (400 -200) (350 -233);
+Wire 6 (400 -300) (350 -333);
+Wire 6 (200 100) (200 -400);
+Wire 6 (200 -400) (500 -400);
+Wire 6 (500 -400) (500 100);
+Wire 6 (500 100) (200 100);
+Layer 97;
+Layer 95;
+Change Size 82;
+Change Ratio 6;
+Text '>Name' SR0 (164 209);
+
+Edit 'CONN_4P_2.sym';
+Layer 94;
+Pin '1' Pas None Middle R0 Pad 0 (0 0)
+Pin '2' Pas None Middle R0 Pad 0 (0 -100)
+Pin '3' Pas None Middle R0 Pad 0 (0 -200)
+Pin '4' Pas None Middle R0 Pad 0 (0 -300)
+Wire 6 (300 0) (200 0);
+Wire 6 (300 -100) (200 -100);
+Wire 6 (300 -200) (200 -200);
+Wire 6 (300 -300) (200 -300);
+Wire 6 (300 0) (350 33);
+Wire 6 (300 -100) (350 -67);
+Wire 6 (300 -200) (350 -167);
+Wire 6 (300 -300) (350 -267);
+Wire 6 (300 0) (350 -33);
+Wire 6 (300 -100) (350 -133);
+Wire 6 (300 -200) (350 -233);
+Wire 6 (300 -300) (350 -333);
+Wire 6 (200 100) (200 -400);
+Wire 6 (200 -400) (500 -400);
+Wire 6 (500 -400) (500 100);
+Wire 6 (500 100) (200 100);
+Layer 97;
+Layer 95;
+Change Size 82;
+Change Ratio 6;
+Text '>Name' SR0 (164 209);
+
+Edit 'CONN_4P_3.sym';
+Layer 94;
+Pin '1' Pas None Middle R0 Pad 0 (0 0)
+Pin '2' Pas None Middle R0 Pad 0 (0 -100)
+Pin '3' Pas None Middle R0 Pad 0 (0 -200)
+Pin '4' Pas None Middle R0 Pad 0 (0 -300)
+Wire 6 (200 100) (200 -400);
+Wire 6 (200 -400) (500 -400);
+Wire 6 (500 -400) (500 100);
+Wire 6 (500 100) (200 100);
+Layer 97;
+Layer 95;
+Change Size 82;
+Change Ratio 6;
+Text '>Name' SR0 (164 209);
+
+Edit '1017523.dev';
+Prefix 'J';
+Description '';
+Value Off;
+Add CONN_4P_1 'A' Next  0 (0 0);
+Package 'CONN_1017516';
+Technology '';
+Attribute Built_By 'EMA_Kyle';
+Attribute Copyright 'Copyright (C) 2018 Accelerated Designs. All rights reserved';
+Attribute Vendor 'Phoenix Contact';
+Attribute Manufacturer_Part_Number '1017523';
+Attribute article_description 'TDPT 4/ 4-SP-6,35-ZB';
+Attribute Plug_system 'Unknown';
+Attribute Producttyp 'Printed circuit board terminal';
+Attribute contact_type 'Unknown';
+Attribute Product_family 'TDPT 4/..-SP';
+Attribute pitch__mm_ '6.35';
+Attribute Number_of_position_per_row '4';
+Attribute number_of_rows '1';
+Attribute number_of_potentials '4';
+Attribute number_of_connection '4';
+Attribute number_of_solder_pins_per_potentials '1';
+Attribute solder_pin_length__mm_ '3.5';
+Attribute SourceLibrary 'Phoenix_Contact_2020-08-21';
+Connect 'A.1' '1';
+Connect 'A.2' '2';
+Connect 'A.3' '3';
+Connect 'A.4' '4';
