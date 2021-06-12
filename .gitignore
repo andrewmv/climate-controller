@@ -10,3 +10,4 @@
 /secrets.yaml
 /env
 /dist
+/esphome.egg-info
