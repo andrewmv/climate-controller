@@ -4,7 +4,7 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 20;				// facet count for curves
 
-dial_pos = [25.4,33.02];
+dial_pos = [23.63,19.52];
 dial_r = 18;
 thickness = 3;
 corner_r = 10;
@@ -13,14 +13,14 @@ display_thickness = 8;
 display_window_layers = 3;
 display_window_thickness = display_window_layers * printer_layer_height;
 display_window_depth = 1;
-display_pos = [[11.43,59.69],[11.43,80.01]];
+display_pos = [[10.93,39.44],[10.93,59.76]];
 display_dim = [25.4,19,display_thickness];
 xdim = 75; //placeholder
 ydim = 120;
 zdim = display_thickness + display_window_depth;
-pcb_dim = [52.05,102.54,1.6];
+pcb_dim = [54.8,82.29,1.6];
 pcb_pos = [
-	(xdim / 2) - (pcb_dim.x / 2),
+	(xdim / 2) - dial_pos.x,
 	(ydim / 2) - (pcb_dim.y / 2),
 	zdim
 ];
@@ -31,9 +31,9 @@ diffuse_yoff = 2.5;
 
 mounting_holes = [
 	[3.81,5.08],
-	[46.99,5.08],
-	[3.81,99.06],
-	[48.26,99.06]
+	[51.01,5.08],
+	[3.81,78.81],
+	[51.01,78.81]
 ];
 mounting_stem_r = 6;	
 mounting_hole_r = 2.5;		//for T6 screws
@@ -44,33 +44,37 @@ mounting_stem_support_thickness = 2;
 
 //*** ASSEMBLY ***//
 
-difference() {
-	faceplate();
-	dial();
-	display_well();
-	for(i = [0:len(mounting_holes)-1]) {
-		translate(pcb_pos + mounting_holes[i]) {
-			linear_extrude(zdim) {
-				circle(mounting_stem_r);
+mirror([1,0,0])	asm();
+
+module asm() {
+	difference() {
+		faceplate();
+		dial();
+		display_well();
+		for(i = [0:len(mounting_holes)-1]) {
+			translate(pcb_pos + mounting_holes[i]) {
+				linear_extrude(zdim) {
+					circle(mounting_stem_r);
+				}
 			}
 		}
 	}
-}
-display_channels();
-brim();
+	display_channels();
+	brim();
 
-for(i = [0:len(mounting_holes)-1]) {
-	difference() {
-		translate(pcb_pos + mounting_holes[i]) {
-			mounting_stem();
+	for(i = [0:len(mounting_holes)-1]) {
+		difference() {
+			translate(pcb_pos + mounting_holes[i]) {
+				mounting_stem();
+			}
+			display_well();
 		}
-		display_well();
 	}
-}
 
-// placeholder PCB - do not print
-*translate(pcb_pos)
-	color("green")	cube(size=pcb_dim);
+	// placeholder PCB - do not print
+	*translate(pcb_pos)
+		color("green")	cube(size=pcb_dim);
+}
 
 //*** MODULES ***//
 
