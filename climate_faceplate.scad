@@ -20,7 +20,8 @@ module asm() {
 		}
 	}
 	display_channels();
-	brim();
+	*brim();
+	color("red")	face_hook_tabs();
 
 	for(i = [0:len(mounting_holes)-1]) {
 		difference() {
@@ -92,6 +93,28 @@ module asm() {
 }
 
 //*** MODULES ***//
+
+module face_hook_tabs() {
+	for(i = [0:len(face_hook_pos[0])-1]) {
+		translate([0,face_hook_pos[0][i],relay_pos.z + face_hook_tab_dim.z]) {
+			face_hook_tab();
+		}
+	}	
+	for(i = [0:len(face_hook_pos[1])-1]) {
+		translate([xdim,face_hook_pos[1][i],relay_pos.z + face_hook_tab_dim.z]) {
+			mirror([1,0,0])
+				face_hook_tab();
+		}
+	}	
+}
+
+module face_hook_tab() {
+	tab_x = xdim - thickness - face_hook_tab_dim.x;
+	tab_z = face_hook_dim_2.z + face_hook_slot_pos.z + face_hook_tol;
+	translate([tab_x, -yoff + face_hook_slot_pos.y, tab_z]) {
+		cube(size=face_hook_tab_dim);
+	}
+}
 
 module hook() {
 	difference() {
