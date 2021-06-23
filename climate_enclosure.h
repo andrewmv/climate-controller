@@ -97,6 +97,29 @@ dht_pos = [xdim - dht_dim.x - thickness - 7,
 		   thickness - 1, 
 		   thickness - 1];
 
+// FACEPLATE HOOKS
+face_hook_thickness = 3;
+face_hook_width = 15;
+face_hook_jbox_clearance = 2;
+face_hook_overreach = (xdim / 2) - (jbox_dim.x / 2) - thickness;
+face_hook_dim_1 = [jbox_dim.x / 2 - face_hook_thickness - face_hook_jbox_clearance,
+				   face_hook_width, 
+				   thickness];
+face_hook_dim_2 = [ thickness,
+					face_hook_width,
+					-relay_pos.z];
+face_hook_dim_3 = [face_hook_overreach + face_hook_jbox_clearance,
+				   15, 
+				   1.5];
+face_hook_dim_4 = [ 2,15, brim_thickness - thickness];
+face_hook_slot_dim = [2 + 2, 15/2 + 1,3];
+face_hook_slot_pos = [-1,15/2,4];
+face_hook_pos = [
+	[20, 65],	// left side
+	[20, 65]	// right side
+];
+
+
 // MODULES
 
 module mounting_stem(depth, stem_r = mounting_stem_r, hole_r = mounting_hole_r) {

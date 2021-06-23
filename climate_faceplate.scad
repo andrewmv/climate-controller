@@ -7,7 +7,7 @@ rotate([0,180,0])
 		mirror([1,0,0])	asm();
 
 module asm() {
-	difference() {
+	*difference() {
 		faceplate();
 		dial();
 		display_well();
