@@ -1,50 +1,10 @@
-//*** DIMENSIONS ***//
-x = 0; y = 1; z = 2;	// simplify array references
-printer_layer_height=0.1313;
-tol = 0.25;				// tolerance
-$fn = 20;				// facet count for curves
-
-dial_pos = [23.63,19.52];
-dial_r = 18;
-thickness = 3;
-corner_r = 10;
-brim_thickness = 5;
-display_thickness = 8; 
-display_window_layers = 3;
-display_window_thickness = display_window_layers * printer_layer_height;
-display_window_depth = 1;
-display_pos = [[10.93,39.44],[10.93,59.76]];
-display_dim = [25.4,19,display_thickness];
-xdim = 75; //placeholder
-ydim = 120;
-zdim = display_thickness + display_window_depth;
-pcb_dim = [54.8,82.29,1.6];
-pcb_pos = [
-	(xdim / 2) - dial_pos.x,
-	(ydim / 2) - (pcb_dim.y / 2),
-	zdim
-];
-diffuse_inter_digit=12.7;
-diffuse_xoff1 = 1;
-diffuse_xoff2 = diffuse_xoff1 + diffuse_inter_digit;
-diffuse_yoff = 2.5;
-
-mounting_holes = [
-	[3.81,5.08],
-	[51.01,5.08],
-	[3.81,78.81],
-	[51.01,78.81]
-];
-mounting_stem_r = 6;	
-mounting_hole_r = 2.5;		//for T6 screws
-mounting_hole_depth = 8;	//for 6mm screws
-mounting_stem_support_height = zdim;
-mounting_stem_support_base = zdim;
-mounting_stem_support_thickness = 2;
+include <climate_enclosure.h>
 
 //*** ASSEMBLY ***//
 
-mirror([1,0,0])	asm();
+rotate([0,180,0])
+	translate([xdim/2,yoff,-brim_thickness])
+		mirror([1,0,0])	asm();
 
 module asm() {
 	difference() {
@@ -65,21 +25,89 @@ module asm() {
 	for(i = [0:len(mounting_holes)-1]) {
 		difference() {
 			translate(pcb_pos + mounting_holes[i]) {
-				mounting_stem();
+				mounting_stem(zdim);
 			}
 			display_well();
 		}
 	}
 
-	// placeholder PCB - do not print
-	*translate(pcb_pos)
-		color("green")	cube(size=pcb_dim);
+	// placeholder DHT
+	translate(dht_pos) {
+		color("white") cube(size=dht_dim);
+	}
+	// DHT mounting stem
+	translate(dht_pos) {
+		difference() {
+			translate([dht_dim.x + 2.5, 
+					   dht_dim.y / 2, 
+					   0]) {
+				mounting_stem(6.5 - 1,
+							  stem_r = 5,
+							  hole_r = 2.5);
+			}
+			cube(size=dht_dim);
+		}
+	}
+
+	// placeholder PCB 
+	translate(pcb_pos) {
+		color("green") {
+			difference() {
+				cube(size=pcb_dim);
+				for(i = [0:len(mounting_holes)-1]) {
+					translate([0,0,-1])
+					translate(mounting_holes[i]) {
+						linear_extrude(zdim) {
+							circle(r=2.1);
+						}
+					}
+				}
+			}
+		}
+		translate([esp_pos.x - esp_dim.x/2,
+				   esp_pos.y - esp_dim.y/2,
+				   esp_pos.z]) {
+			color("lime")
+				cube(esp_dim, center=false);
+			*color("black") {		
+				translate([0, esp_header_offset, -esp_header_dim.z])
+					cube(esp_header_dim);
+				translate([esp_dim.x - esp_header_dim.x, esp_header_offset, -esp_header_dim.z])
+					cube(esp_header_dim);
+			}
+		}
+		translate(dial_pos) {
+			color("black")
+				cube([13,13,5], center=true);
+		}
+	}
+
+	// hooks
+	*for(i = [0:len(hook_pos)-1]) {
+		translate(hook_pos[i]) {
+			hook();
+		}
+	}
+
 }
 
 //*** MODULES ***//
 
+module hook() {
+	difference() {
+		cube(size=hook_dim);
+		translate([-1,-1,hook_cut_height])
+			cube(size=[hook_dim.x + 2, hook_cut_dim.y + 1, hook_cut_dim.x]);
+	}
+}
+
 module faceplate() {
-	cube(size=[xdim, ydim, thickness]);
+	difference() {
+		cube(size=[xdim, ydim, thickness]);
+		translate(dht_pos) {
+			cube(size=dht_dim);
+		}
+	}
 }
 
 module brim() {
@@ -89,6 +117,11 @@ module brim() {
 			cube(size=[xdim - (2 * thickness),
 					   ydim - (2 * thickness),
 					   brim_thickness + 2]);
+		}
+		translate(dht_pos) {
+			cube(size=[dht_dim.x,
+					   dht_dim.y,
+					   brim_thickness]);
 		}
 	}
 }
@@ -134,40 +167,5 @@ module display_channels() {
 module digit_channels(h) {
 	linear_extrude(height=h, center=false, convexity=6) {
 		import(file="7-segment_layout_scaled_90.svg", layer="layer2", dpi=96);
-	}
-}
-
-module mounting_stem() {
-	difference() {
-		linear_extrude(zdim) {
-			circle(mounting_stem_r);
-		}
-		translate([0,0,zdim - mounting_hole_depth]) {
-			linear_extrude(mounting_hole_depth + 1) {
-				circle(mounting_hole_r);
-			}
-		}
-	}
-	// stem_support(0);
-	// stem_support(90);
-	// stem_support(180);
-	// stem_support(270);
-}
-
-//support triangle
-support_points = [
-	[0,0],
-	[0, mounting_stem_support_height],
-	[mounting_stem_support_base, 0]
-];
-support_paths = [[0, 1, 2]];
-
-module stem_support(rotation) {
-	rotate([90,0,rotation]) {
-		translate([mounting_stem_r - 1,0,-mounting_stem_support_thickness / 2]) {
-			linear_extrude(mounting_stem_support_thickness) {
-				polygon(points=support_points, paths=support_paths);
-			}
-		}
 	}
 }
