@@ -1,16 +1,72 @@
 include <climate_enclosure.h>
 
 //*** DIMENSIONS ***//
-
+face_hook_thickness = 3;
+face_hook_width = 15;
+face_hook_jbox_clearance = 2;
+face_hook_overreach = (xdim / 2) - (jbox_dim.x / 2) - thickness;
+face_hook_dim_1 = [jbox_dim.x / 2 - face_hook_thickness - face_hook_jbox_clearance,
+				   face_hook_width, 
+				   thickness];
+face_hook_dim_2 = [ thickness,
+					face_hook_width,
+					-relay_pos.z];
+face_hook_dim_3 = [face_hook_overreach + face_hook_jbox_clearance,
+				   15, 
+				   1.5];
+face_hook_dim_4 = [ 2,15, brim_thickness - thickness];
+face_hook_slot_dim = [2 + 2, 15/2 + 1,3];
+face_hook_slot_pos = [-1,15/2,4];
+face_hook_pos = [
+	[20, 65],	// left side
+	[20, 65]	// right side
+];
 
 //*** ASSEMBLY ***//
 
-placeholder_board();
+*placeholder_board();
 color("white")	jbox_mounting_ears();
 color("white")	relay_plate();
+color("white")	face_hooks();
 color("grey", 0.5)	placeholder_jbox();
 
 //*** MODULES ***//
+
+module face_hooks() {
+	for(i = [0:len(face_hook_pos[1])-1]) {
+		translate([0,face_hook_pos[1][i],relay_pos.z]) {
+			face_hook_right();
+		}
+	}
+	for (i = [0:len(face_hook_pos[0])-1]) {
+		translate([0,face_hook_pos[0][i],relay_pos.z]) {
+			face_hook_left();
+		}
+	}
+}
+
+module face_hook_left() {
+	mirror([1,0,0])
+		face_hook_right();
+}
+
+module face_hook_right() {
+	cube(size=face_hook_dim_1);
+	translate([face_hook_dim_1.x,0,0]) {
+		cube(size=face_hook_dim_2);
+		translate([0,0,face_hook_dim_2.z]) {
+			cube(size=face_hook_dim_3);
+			translate([face_hook_dim_3.x,0,0]) {
+				difference() {
+					cube(size=face_hook_dim_4);
+					translate(face_hook_slot_pos) {
+						cube(size=face_hook_slot_dim);
+					}
+				}
+			}
+		}
+	}
+}
 
 module placeholder_jbox() {
 	translate([-jbox_dim.x/2,0,-jbox_dim.z]) {
