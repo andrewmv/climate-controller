@@ -4,13 +4,38 @@ include <climate_enclosure.h>
 
 //*** ASSEMBLY ***//
 
+*supports();
 *placeholder_board();
 color("white")	jbox_mounting_ears();
 color("white")	relay_plate();
 color("white")	face_hooks();
+color("blue")	label();
 *color("grey", 0.5)	placeholder_jbox();
 
 //*** MODULES ***//
+
+module supports() {
+	rotate([0,180,0])
+		translate([0,0,2 * -relay_pos.z - thickness])
+			translate([-jbox_dim.x/2,0,0]) 
+			translate(relay_pos) {
+				for(i = [0:len(relay_mounting_holes)-1]) {
+					translate(relay_mounting_holes[i]) {
+						mounting_stem(mounting_hole_depth + thickness,
+							hole_r = 0);
+					}
+				}
+			}
+}
+
+module label() {
+	translate([	relay_pos.x + 10,
+				relay_pos.y + 5,
+				relay_pos.z+thickness])
+		rotate([0,0,90])
+			linear_extrude(0.75)
+				text(label_text, size=label_size);
+}
 
 module face_hooks() {
 	for(i = [0:len(face_hook_pos[1])-1]) {

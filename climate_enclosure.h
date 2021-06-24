@@ -4,6 +4,9 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
+label_text = "AMV 2021-06 v1.0";
+label_size = 4;
+
 // Junction Box
 jbox_dim = [51,92,82];
 jbox_screw_distance = 83.5; 
@@ -29,7 +32,7 @@ display_window_depth = 1;
 display_pos = [[10.93,39.44],[10.93,59.76]];
 display_dim = [25.4,19,display_thickness];
 xdim = 75; //placeholder
-ydim = 120;
+ydim = 115;
 zdim = display_thickness + display_window_depth;
 yoff = -10;
 
@@ -37,7 +40,7 @@ yoff = -10;
 pcb_dim = [54.8,82.29,1.6];
 pcb_pos = [
 	(xdim / 2) - dial_pos.x,
-	(ydim / 2) - (pcb_dim.y / 2),
+	(ydim / 2) - (pcb_dim.y / 2) + 5,
 	zdim
 ];
 diffuse_inter_digit=12.7;

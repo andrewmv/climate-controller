@@ -3,8 +3,10 @@ include <climate_enclosure.h>
 //*** ASSEMBLY ***//
 
 rotate([0,180,0])
-	translate([xdim/2,yoff,-brim_thickness])
+	translate([xdim/2,yoff,-brim_thickness]) {
+		color("red")	fp_label();
 		mirror([1,0,0])	asm();
+	}
 
 module asm() {
 	difference() {
@@ -12,11 +14,12 @@ module asm() {
 		dial();
 		display_well();
 		for(i = [0:len(mounting_holes)-1]) {
-			translate(pcb_pos + mounting_holes[i]) {
-				linear_extrude(zdim) {
-					circle(mounting_stem_r);
+			translate([0,0,1])
+				translate(pcb_pos + mounting_holes[i]) {
+					linear_extrude(zdim) {
+						circle(mounting_stem_r);
+					}
 				}
-			}
 		}
 	}
 	display_channels();
@@ -93,6 +96,13 @@ module asm() {
 }
 
 //*** MODULES ***//
+
+module fp_label() {
+	translate([-13,35,thickness])
+		rotate([0,0,90])
+			linear_extrude(0.75)
+				text(label_text, size=label_size);
+}
 
 module dht_slots() {
 	for(i = [0:dht_slot_spacing * 2:dht_dim.x]) {
