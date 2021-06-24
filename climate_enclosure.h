@@ -2,7 +2,7 @@
 x = 0; y = 1; z = 2;	// simplify array references
 printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
-$fn = 20;				// facet count for curves
+$fn = 80;				// facet count for curves
 
 // Junction Box
 jbox_dim = [51,92,82];
@@ -96,6 +96,8 @@ dht_dim = [20.2,15.4,9.4];
 dht_pos = [xdim - dht_dim.x - thickness - 7,
 		   thickness - 1, 
 		   thickness - 1];
+dht_slot_dim = [1.5,dht_dim.y + thickness,dht_dim.z];
+dht_slot_spacing = 1.5;
 
 // FACEPLATE HOOKS
 face_hook_tol = 0.25;

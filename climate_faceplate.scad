@@ -7,7 +7,7 @@ rotate([0,180,0])
 		mirror([1,0,0])	asm();
 
 module asm() {
-	*difference() {
+	difference() {
 		faceplate();
 		dial();
 		display_well();
@@ -20,7 +20,7 @@ module asm() {
 		}
 	}
 	display_channels();
-	*brim();
+	brim();
 	color("red")	face_hook_tabs();
 
 	for(i = [0:len(mounting_holes)-1]) {
@@ -33,7 +33,7 @@ module asm() {
 	}
 
 	// placeholder DHT
-	translate(dht_pos) {
+	*translate(dht_pos) {
 		color("white") cube(size=dht_dim);
 	}
 	// DHT mounting stem
@@ -51,7 +51,7 @@ module asm() {
 	}
 
 	// placeholder PCB 
-	translate(pcb_pos) {
+	*translate(pcb_pos) {
 		color("green") {
 			difference() {
 				cube(size=pcb_dim);
@@ -94,6 +94,16 @@ module asm() {
 
 //*** MODULES ***//
 
+module dht_slots() {
+	for(i = [0:dht_slot_spacing * 2:dht_dim.x]) {
+		translate([	dht_pos.x + i,
+					dht_pos.y - thickness,
+					dht_pos.z - thickness]) {
+			color("cyan")	cube(size=dht_slot_dim);
+		}
+	}
+}
+
 module face_hook_tabs() {
 	for(i = [0:len(face_hook_pos[0])-1]) {
 		translate([0,face_hook_pos[0][i],relay_pos.z + face_hook_tab_dim.z]) {
@@ -130,6 +140,7 @@ module faceplate() {
 		translate(dht_pos) {
 			cube(size=dht_dim);
 		}
+		dht_slots();
 	}
 }
 
@@ -146,6 +157,7 @@ module brim() {
 					   dht_dim.y,
 					   brim_thickness]);
 		}
+		dht_slots();
 	}
 }
 
