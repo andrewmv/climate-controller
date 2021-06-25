@@ -4,8 +4,8 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "AMV 2021-06 v1.0";
-label_size = 4;
+label_text = "2021-06 v1.0";
+label_size = 5;
 
 // Junction Box
 jbox_dim = [51,92,82];
@@ -128,6 +128,9 @@ face_hook_tab_dim = [3,
 					 8,
 					 face_hook_slot_dim.z - (face_hook_tol * 2)];
 
+// BEZEL
+
+bezel_r = 5;
 
 // MODULES
 
