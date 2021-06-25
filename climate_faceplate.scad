@@ -2,11 +2,28 @@ include <climate_enclosure.h>
 
 //*** ASSEMBLY ***//
 
-rotate([0,180,0])
+// supports();
+
+rotate([0,180,0]) {
 	translate([xdim/2,yoff,-brim_thickness]) {
 		color("red")	fp_label();
-		mirror([1,0,0])	asm();
+		mirror([1,0,0])	{ 
+			bezeled_asm();
+			*supports();
+		}
 	}
+}
+
+module bezeled_asm() {
+	intersection() {
+		translate([xdim,0,2*bezel_r]) {
+			rotate([0,180,0]) {
+				bezel();
+			}
+		}
+		asm();
+	}	
+}
 
 module asm() {
 	difference() {
@@ -96,6 +113,85 @@ module asm() {
 }
 
 //*** MODULES ***//
+
+module supports() {
+	// PCB Mounting stems
+	for(i = [0:len(mounting_holes)-1]) {
+		translate(pcb_pos + mounting_holes[i]) {
+			mounting_stem(zdim, hole_r=0);
+		}
+	}
+	// DHT mounting stem
+	translate(dht_pos) {
+		difference() {
+			translate([dht_dim.x + 2.5, 
+					   dht_dim.y / 2, 
+					   0]) {
+				mounting_stem(6.5 - 1,
+							  stem_r = 5,
+							  hole_r = 0);
+			}
+			cube(size=dht_dim);
+		}
+	}	
+	// Tabs
+	face_hook_tabs();
+}
+
+module bezel() {
+	translate([bezel_r, bezel_r, bezel_r])
+		cube(size=[xdim - (2*bezel_r),ydim - (2*bezel_r),bezel_r]);
+	translate([bezel_r,0,-brim_thickness]) 
+		cube(size=[xdim - (2 * bezel_r), ydim, bezel_r + brim_thickness]);
+	translate([0,bezel_r,-brim_thickness]) 
+		cube(size=[xdim, ydim - (2 * bezel_r), bezel_r + brim_thickness]);
+
+	translate([0,0,-brim_thickness]) {
+		linear_extrude(bezel_r + brim_thickness) {
+			translate([bezel_r,bezel_r,0])
+				circle(bezel_r);
+			translate([xdim - bezel_r,bezel_r,0])
+				circle(bezel_r);
+			translate([bezel_r,ydim-bezel_r,0])
+				circle(bezel_r);
+			translate([xdim-bezel_r,ydim-bezel_r,0])
+				circle(bezel_r);
+		}
+	}
+
+	translate([0,0,bezel_r]) {
+		translate([0,bezel_r,0]) {
+			rotate([-90,0,0]) {
+				linear_extrude(ydim - (2 * bezel_r)) {
+					translate([bezel_r,0,0])
+						circle(bezel_r);
+					translate([xdim-bezel_r,0,0])
+						circle(bezel_r);
+				}
+			}
+		}
+
+		translate([bezel_r,0,0]) {
+			rotate([0,90,0]) {
+				linear_extrude(xdim - (2 * bezel_r)) {
+					translate([0,bezel_r,0])
+						circle(bezel_r);
+					translate([0,ydim-bezel_r,0])
+						circle(bezel_r);
+				}
+			}
+		}
+
+		translate([bezel_r,bezel_r,0])
+			sphere(bezel_r);
+		translate([xdim-bezel_r,bezel_r,0])
+			sphere(bezel_r);
+		translate([bezel_r,ydim-bezel_r,0])
+			sphere(bezel_r);
+		translate([xdim-bezel_r,ydim-bezel_r,0])
+			sphere(bezel_r);
+	}
+}
 
 module fp_label() {
 	translate([-13,35,thickness])
