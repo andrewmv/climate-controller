@@ -53,7 +53,7 @@ module asm() {
 	}
 
 	// placeholder DHT
-	*translate(dht_pos) {
+	translate(dht_pos) {
 		color("white") cube(size=dht_dim);
 	}
 	// DHT mounting stem
@@ -71,7 +71,7 @@ module asm() {
 	}
 
 	// placeholder PCB 
-	*translate(pcb_pos) {
+	translate(pcb_pos) {
 		color("green") {
 			difference() {
 				cube(size=pcb_dim);

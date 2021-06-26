@@ -5,7 +5,7 @@ include <climate_enclosure.h>
 //*** ASSEMBLY ***//
 
 *supports();
-*placeholder_board();
+placeholder_board();
 color("white")	jbox_mounting_ears();
 color("white")	relay_plate();
 color("white")	face_hooks();
