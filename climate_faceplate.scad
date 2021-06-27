@@ -2,14 +2,15 @@ include <climate_enclosure.h>
 
 //*** ASSEMBLY ***//
 
-// supports();
-
 rotate([0,180,0]) {
 	translate([xdim/2,yoff,-brim_thickness]) {
 		color("red")	fp_label();
 		mirror([1,0,0])	{ 
-			bezeled_asm();
-			*supports();
+			if (render_supports) {
+				supports();
+			} else {
+				bezeled_asm();
+			}
 		}
 	}
 }
@@ -53,9 +54,12 @@ module asm() {
 	}
 
 	// placeholder DHT
-	translate(dht_pos) {
-		color("white") cube(size=dht_dim);
+	if (render_placeholders) {
+		translate(dht_pos) {
+			color("white") cube(size=dht_dim);
+		}
 	}
+
 	// DHT mounting stem
 	translate(dht_pos) {
 		difference() {
@@ -71,35 +75,37 @@ module asm() {
 	}
 
 	// placeholder PCB 
-	translate(pcb_pos) {
-		color("green") {
-			difference() {
-				cube(size=pcb_dim);
-				for(i = [0:len(mounting_holes)-1]) {
-					translate([0,0,-1])
-					translate(mounting_holes[i]) {
-						linear_extrude(zdim) {
-							circle(r=2.1);
+	if (render_placeholders) {
+		translate(pcb_pos) {
+			color("green") {
+				difference() {
+					cube(size=pcb_dim);
+					for(i = [0:len(mounting_holes)-1]) {
+						translate([0,0,-1])
+						translate(mounting_holes[i]) {
+							linear_extrude(zdim) {
+								circle(r=2.1);
+							}
 						}
 					}
 				}
 			}
-		}
-		translate([esp_pos.x - esp_dim.x/2,
-				   esp_pos.y - esp_dim.y/2,
-				   esp_pos.z]) {
-			color("lime")
-				cube(esp_dim, center=false);
-			*color("black") {		
-				translate([0, esp_header_offset, -esp_header_dim.z])
-					cube(esp_header_dim);
-				translate([esp_dim.x - esp_header_dim.x, esp_header_offset, -esp_header_dim.z])
-					cube(esp_header_dim);
+			translate([esp_pos.x - esp_dim.x/2,
+					   esp_pos.y - esp_dim.y/2,
+					   esp_pos.z]) {
+				color("lime")
+					cube(esp_dim, center=false);
+				*color("black") {		
+					translate([0, esp_header_offset, -esp_header_dim.z])
+						cube(esp_header_dim);
+					translate([esp_dim.x - esp_header_dim.x, esp_header_offset, -esp_header_dim.z])
+						cube(esp_header_dim);
+				}
 			}
-		}
-		translate(dial_pos) {
-			color("black")
-				cube([13,13,5], center=true);
+			translate(dial_pos) {
+				color("black")
+					cube([13,13,5], center=true);
+			}
 		}
 	}
 
