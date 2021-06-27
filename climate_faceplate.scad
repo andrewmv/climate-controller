@@ -4,7 +4,9 @@ include <climate_enclosure.h>
 
 rotate([0,180,0]) {
 	translate([xdim/2,yoff,-brim_thickness]) {
-		color("red")	fp_label();
+		if (!render_supports) {
+			color("red")	fp_label();
+		}
 		mirror([1,0,0])	{ 
 			if (render_supports) {
 				supports();

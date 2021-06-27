@@ -13,9 +13,9 @@ if (render_supports) {
 	}
 	color("white")	jbox_mounting_ears();
 	color("white")	relay_plate();
-	color("white")	face_hooks();
 	color("blue")	label();
 }
+color("white")	face_hooks();
 
 //*** MODULES ***//
 
@@ -61,7 +61,9 @@ module face_hook_left() {
 }
 
 module face_hook_right() {
-	cube(size=face_hook_dim_1);
+	if (!render_supports) {
+		cube(size=face_hook_dim_1);
+	}
 	translate([face_hook_dim_1.x,0,0]) {
 		cube(size=face_hook_dim_2);
 		translate([0,0,face_hook_dim_2.z]) {

@@ -5,7 +5,11 @@ include <climate_enclosure.h>
 translate([0,0,-relay_cover_height - mounting_hole_depth - relay_dim.z]) {
 	translate([-jbox_dim.x/2,0,0]) {
 		translate(relay_pos) {
-			relay_asm();
+			if (render_supports) {
+
+			} else {
+				relay_asm();
+			}
 		}
 	}
 }
@@ -14,11 +18,27 @@ module relay_asm() {
 	difference() {
 		sides();
 		mount_stem_negatives();
+		rc_label();
 	}
-	mount_stems();
+	difference() {
+		mount_stems();
+		relay_outline();
+	}
+	// rc_label();
 }
 
 // MODULES
+
+module rc_label() {
+	translate([0.5,10,relay_cover_height - label_size - 1])
+	rotate([90,0,90]) {
+		color("red") {
+			linear_extrude(1) {
+				text(label_text, label_size);
+			}
+		}
+	}
+}
 
 module mount_stems() {
 	intersection() {
