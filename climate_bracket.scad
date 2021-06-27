@@ -4,13 +4,18 @@ include <climate_enclosure.h>
 
 //*** ASSEMBLY ***//
 
-*supports();
-placeholder_board();
-color("white")	jbox_mounting_ears();
-color("white")	relay_plate();
-color("white")	face_hooks();
-color("blue")	label();
-*color("grey", 0.5)	placeholder_jbox();
+if (render_supports) {
+	supports();
+} else {
+	if (render_placeholders) {
+		placeholder_board();
+		*color("grey", 0.5)	placeholder_jbox();
+	}
+	color("white")	jbox_mounting_ears();
+	color("white")	relay_plate();
+	color("white")	face_hooks();
+	color("blue")	label();
+}
 
 //*** MODULES ***//
 
