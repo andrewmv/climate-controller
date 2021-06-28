@@ -14,10 +14,38 @@ if (render_supports) {
 	color("white")	jbox_mounting_ears();
 	color("white")	relay_plate();
 	color("blue")	label();
+	color("pink")	sidewalls();
 }
 color("white")	face_hooks();
 
 //*** MODULES ***//
+
+module sidewalls() {
+	rotate([0,180,0]) {
+		translate([	-relay_dim.x/2,
+					relay_pos.y,
+					-relay_pos.z]) {
+			difference() {
+				cube(size=[	relay_dim.x,
+							relay_dim.y,
+							mounting_hole_depth]);
+				translate([	relay_sidewalls,
+							relay_sidewalls,
+							-1]) {
+					cube(size=[	relay_dim.x - (2 * relay_sidewalls),
+								relay_dim.y - (2 * relay_sidewalls),
+								mounting_hole_depth + 2]);
+				}
+				for(i = [0:len(relay_mounting_holes)-1]) {
+					translate(relay_mounting_holes[i]) {
+						mounting_stem(mounting_hole_depth + thickness,
+							hole_r = 0);
+					}
+				}
+			}
+		}
+	}
+}
 
 module supports() {
 	rotate([0,180,0])

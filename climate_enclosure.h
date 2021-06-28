@@ -99,10 +99,11 @@ relay_mounting_holes = [
 	[3.81,58.65],
 	[38.1,58.65]
 ];
-relay_cover_height = 20.0;
+relay_cover_height = 10.0;
 relay_cover_thickness = 1.5;
 relay_cover_mount_stem_r = 2.75;
 relay_cover_mount_hole_r = 1;
+relay_sidewalls = 1.5;
 
 // DHT SENSOR
 dht_dim = [20.2,15.4,9.4];
