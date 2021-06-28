@@ -19,6 +19,7 @@ module relay_asm() {
 		sides();
 		mount_stem_negatives();
 		rc_label();
+		conn_cuts();
 	}
 	difference() {
 		mount_stems();
@@ -28,6 +29,19 @@ module relay_asm() {
 }
 
 // MODULES
+
+module conn_cuts() {
+	for (i = [0:len(relay_conn_openings)-1]) {
+		translate([	relay_dim.x - relay_cover_thickness,
+					relay_conn_openings[i][0],
+					relay_cover_height - relay_conn_height])
+		color("grey") {
+			cube(size=[	relay_cover_thickness,
+						relay_conn_openings[i][1],
+						relay_conn_height]);
+		}
+	}
+}
 
 module rc_label() {
 	translate([0.5,10,relay_cover_height - label_size - 1])

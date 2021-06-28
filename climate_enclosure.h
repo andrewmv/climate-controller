@@ -105,6 +105,14 @@ relay_cover_mount_stem_r = 2.75;
 relay_cover_mount_hole_r = 1;
 relay_sidewalls = 1.5;
 
+// array of tuples, [pos,length]
+relay_conn_openings = [
+	[8.0,9.0],
+	[32.0,4],
+	[42.5,4]
+];
+relay_conn_height=3;
+
 // DHT SENSOR
 dht_dim = [20.2,15.4,9.4];
 dht_pos = [xdim - dht_dim.x - thickness - 7,
