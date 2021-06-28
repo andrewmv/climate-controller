@@ -8,7 +8,7 @@ label_text = "2021-06 v1.0";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
-render_placeholders = false;
+render_placeholders = true;
 
 // Only render mesh overlap structures
 render_supports = false;
@@ -75,12 +75,12 @@ mounting_stem_support_height = zdim;
 mounting_stem_support_base = zdim;
 mounting_stem_support_thickness = 2;
 
-hook_pos = [
-	[18,40],
-	[18,80],
-	[69,40],
-	[69,80]
-];
+// hook_pos = [
+// 	[18,50],
+// 	[18,80],
+// 	[69,40],
+// 	[69,80]
+// ];
 hook_dim = [3,20,30];
 hook_cut_pos = [-1,10,3];
 hook_cut_dim = [3, 10];
@@ -115,7 +115,7 @@ relay_conn_height=3;
 
 // DHT SENSOR
 dht_dim = [20.2,15.4,9.4];
-dht_pos = [xdim - dht_dim.x - thickness - 7,
+dht_pos = [xdim - dht_dim.x - thickness - 11,
 		   thickness - 1, 
 		   thickness - 1];
 dht_slot_dim = [1.5,dht_dim.y + thickness,dht_dim.z];
@@ -128,7 +128,7 @@ face_hook_width = 15;
 face_hook_jbox_clearance = 2;
 face_hook_dim_4 = [ 2,15, brim_thickness - thickness];
 face_hook_overreach = (xdim / 2) - (jbox_dim.x / 2) - face_hook_dim_4.x - face_hook_tol;
-face_hook_dim_1 = [jbox_dim.x / 2 - face_hook_thickness - face_hook_jbox_clearance,
+face_hook_dim_1 = [12,
 				   face_hook_width, 
 				   thickness];
 face_hook_dim_2 = [ thickness,
@@ -140,8 +140,8 @@ face_hook_dim_3 = [face_hook_overreach + face_hook_jbox_clearance,
 face_hook_slot_dim = [2 + 2, 15/2 + 1,3];
 face_hook_slot_pos = [-1,15/2,4];
 face_hook_pos = [
-	[20, 65],	// left side
-	[20, 65]	// right side
+	[2, 65],	// left side
+	[2, 65]		// right side
 ];
 face_hook_tab_dim = [3,
 					 8,

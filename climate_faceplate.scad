@@ -219,13 +219,13 @@ module dht_slots() {
 }
 
 module face_hook_tabs() {
-	for(i = [0:len(face_hook_pos[0])-1]) {
-		translate([0,face_hook_pos[0][i],relay_pos.z + face_hook_tab_dim.z]) {
+	for(i = [0:len(face_hook_pos[1])-1]) {
+		translate([0,face_hook_pos[1][i],relay_pos.z + face_hook_tab_dim.z]) {
 			face_hook_tab();
 		}
 	}	
-	for(i = [0:len(face_hook_pos[1])-1]) {
-		translate([xdim,face_hook_pos[1][i],relay_pos.z + face_hook_tab_dim.z]) {
+	for(i = [0:len(face_hook_pos[0])-1]) {
+		translate([xdim,face_hook_pos[0][i],relay_pos.z + face_hook_tab_dim.z]) {
 			mirror([1,0,0])
 				face_hook_tab();
 		}

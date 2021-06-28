@@ -11,12 +11,12 @@ if (render_supports) {
 		placeholder_board();
 		*color("grey", 0.5)	placeholder_jbox();
 	}
-	color("white")	jbox_mounting_ears();
+	color("cyan")	jbox_mounting_ears();
 	color("white")	relay_plate();
 	color("blue")	label();
 	color("pink")	sidewalls();
 }
-color("white")	face_hooks();
+color("cyan")	face_hooks();
 
 //*** MODULES ***//
 
@@ -89,18 +89,20 @@ module face_hook_left() {
 }
 
 module face_hook_right() {
-	if (!render_supports) {
-		cube(size=face_hook_dim_1);
-	}
-	translate([face_hook_dim_1.x,0,0]) {
-		cube(size=face_hook_dim_2);
-		translate([0,0,face_hook_dim_2.z]) {
-			cube(size=face_hook_dim_3);
-			translate([face_hook_dim_3.x,0,0]) {
-				difference() {
-					cube(size=face_hook_dim_4);
-					translate(face_hook_slot_pos) {
-						cube(size=face_hook_slot_dim);
+	translate([jbox_dim.x/2 - face_hook_dim_1.x - face_hook_jbox_clearance - thickness,0,0]) {
+		if (!render_supports) {
+			cube(size=face_hook_dim_1);
+		}
+		translate([face_hook_dim_1.x,0,0]) {
+			cube(size=face_hook_dim_2);
+			translate([0,0,face_hook_dim_2.z]) {
+				cube(size=face_hook_dim_3);
+				translate([face_hook_dim_3.x,0,0]) {
+					difference() {
+						cube(size=face_hook_dim_4);
+						translate(face_hook_slot_pos) {
+							cube(size=face_hook_slot_dim);
+						}
 					}
 				}
 			}
