@@ -1,0 +1,167 @@
+esphome:
+  name: climatetest
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: !secret ssid  
+  password: !secret wappw
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Climatetest Fallback Hotspot"
+    password: !secret hotspotpw
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret apipw
+
+ota:
+  password: !secret apipw
+
+### PIN MAPPINGS ###
+
+# D0      - Unused
+# D1      - Thermosensor
+# D2      - Display Enable
+# D3(OUT) - Display Data
+# D4(OUT) - Display Clock
+# D5      - Encoder Switch
+# D6      - Encoder Clock
+# D7      - Encoder Signal
+# D8(OUT) - Heater Relay
+
+### BEGIN GOOD STUFF ###
+
+globals:
+  id: system_on
+  type: bool
+  restore_value: true
+  initial_value: 'false'
+
+# MAX7219 Configuration
+spi:
+  clk_pin: D4
+  mosi_pin: D3
+
+display:
+  - platform: max7219
+    id: temp_display
+    cs_pin: D2
+    num_chips: 1
+    reverse_enable: true
+    lambda: |-
+      it.printf(0, "%2.0f", id(test_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
+      if (id(system_on)) {
+        if (id(heater).state) {
+          it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+        } else {
+          it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+          it.printf(2, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
+          it.printf(4, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
+        }
+      //} else {
+        //it.printf(0, "--");
+        //it.printf(2, "--");
+        //it.printf(4, "--");
+        //it.printf(6, "--");
+      }
+  # it.print("1.2.3.4.5.6.7.8.");
+
+sensor:
+  - platform: dht
+    pin: D1
+    temperature:
+      name: "Lab Temperature"
+      id: test_sensor
+      unit_of_measurement: "°C"
+      # filters:
+        # - lambda: return x * (9.0/5.0) + 32.0;
+    humidity:
+      name: "Lab Humidity"
+    update_interval: 10s
+
+  - platform: rotary_encoder
+    id: rot_enc
+    internal: true
+    # min_value: 10
+    # max_value: 37
+    on_clockwise:
+      - lambda: |-
+          if ((id(test_thermostat).mode == CLIMATE_MODE_HEAT) && (id(test_thermostat).target_temperature < 32.22)) {
+            id(test_thermostat).target_temperature += 0.555;
+            id(temp_display).update();
+          }
+      - script.execute: set_point_timer
+    on_anticlockwise:
+      - lambda: |-
+          if ((id(test_thermostat).mode == CLIMATE_MODE_HEAT) && (id(test_thermostat).target_temperature > 10.0)) {
+            id(test_thermostat).target_temperature -= 0.555;
+            id(temp_display).update();
+          }
+      - script.execute: set_point_timer
+    pin_a:
+      number: D6
+      mode: INPUT_PULLUP
+    pin_b: 
+      number: D7
+      mode: INPUT_PULLUP
+
+binary_sensor:
+  - platform: gpio
+    id: rot_sw
+    pin: 
+      number: D5
+      mode: INPUT_PULLUP
+    internal: true
+    filters:
+      - invert: 
+    on_click:
+      - lambda: |-
+          auto call = id(test_thermostat).make_call();
+          if (id(test_thermostat).mode == CLIMATE_MODE_HEAT) {
+            call.set_mode("OFF");
+          } else {
+            call.set_mode("HEAT");
+          }
+          call.perform();
+
+switch:
+  - platform: gpio
+    pin: D8
+    internal: true
+    id: heater
+
+script:
+  - id: set_point_timer
+    then: 
+      - delay: 2s
+      # climate component doesn't support update(), so we submit an empty api call to update the frontend
+      - lambda: |-
+          auto call = id(test_thermostat).make_call();
+          call.perform();
+
+climate:
+  - platform: thermostat
+    name: Test thermostat
+    id: test_thermostat
+    sensor: test_sensor
+    default_target_temperature_low: 23.33 
+    visual:
+      min_temperature: 10
+      max_temperature: 32.22
+      temperature_step: 1.0
+    heat_action:
+      - switch.turn_on: heater
+    idle_action:
+      - switch.turn_off: heater
+    heat_mode:
+      - lambda: 'id(system_on) = true;'
+    off_mode:
+      - lambda: 'id(system_on) = false;'
+
