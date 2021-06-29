@@ -4,11 +4,11 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-06 v1.0";
+label_text = "2021-06 v1.5";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
-render_placeholders = true;
+render_placeholders = false;
 
 // Only render mesh overlap structures
 render_supports = false;
