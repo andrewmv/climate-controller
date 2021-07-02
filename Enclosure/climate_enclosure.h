@@ -26,6 +26,13 @@ jbox_mount_dim = [15, 10, jbox_dim.z];
 // Dial
 dial_pos = [23.63,19.52];
 dial_r = 18;
+dial_bezel_r = 3;
+dial_depth = 10;
+dial_walls = 1.5;
+dial_shaft_depth = 10;
+dial_shaft_r = 8;
+dial_hole_r = 6.5;
+dial_hole_cut = 4;
 
 // Faceplate
 thickness = 3;
