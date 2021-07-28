@@ -7,16 +7,24 @@ include <climate_enclosure.h>
 if (render_supports) {
 	supports();
 } else {
-	if (render_placeholders) {
-		placeholder_board();
-		*color("grey", 0.5)	placeholder_jbox();
+	difference() {
+		union() {
+			if (render_placeholders) {
+				placeholder_board();
+				*color("grey", 0.5)	placeholder_jbox();
+			}
+			color("cyan")	jbox_mounting_ears();
+			color("white")	relay_plate();
+			color("blue")	label();
+			*color("pink")	sidewalls();
+			color("cyan")	face_hooks();
+		}
+		translate([0,0,0])
+			relay_mounting_stems(0);
 	}
-	color("cyan")	jbox_mounting_ears();
-	color("white")	relay_plate();
-	color("blue")	label();
-	color("pink")	sidewalls();
+	relay_mounting_stems(mounting_hole_r);
 }
-color("cyan")	face_hooks();
+
 
 //*** MODULES ***//
 
@@ -47,23 +55,30 @@ module sidewalls() {
 	}
 }
 
-module supports() {
-	rotate([0,180,0])
-		translate([0,0,2 * -relay_pos.z - thickness])
-			translate([-jbox_dim.x/2,0,0]) 
-			translate(relay_pos) {
-				for(i = [0:len(relay_mounting_holes)-1]) {
-					translate(relay_mounting_holes[i]) {
-						mounting_stem(mounting_hole_depth + thickness,
-							hole_r = 0);
+module relay_mounting_stems(r) {
+	translate([-jbox_dim.x/2,0,mounting_hole_depth + thickness]) {
+		translate(relay_pos) {
+			for(i = [0:len(relay_mounting_holes)-1]) {
+				translate(relay_mounting_holes[i]) {
+					translate([0,0, - relay_pcb_inset + relay_dim.z]) {
+						rotate([180,0,0]) {
+							mounting_stem(mounting_hole_depth + thickness - relay_pcb_inset + relay_dim.z,
+								hole_r = r);
+						}
 					}
 				}
 			}
+		}
+	}
+}
+
+module supports() {
+	relay_mounting_stems(0);
 }
 
 module label() {
 	translate([	relay_pos.x + 10,
-				relay_pos.y + 5,
+				relay_pos.y + 10,
 				relay_pos.z+thickness])
 		rotate([0,0,90])
 			linear_extrude(0.75)
@@ -89,25 +104,40 @@ module face_hook_left() {
 }
 
 module face_hook_right() {
-	translate([jbox_dim.x/2 - face_hook_dim_1.x - face_hook_jbox_clearance - thickness,0,0]) {
-		if (!render_supports) {
-			cube(size=face_hook_dim_1);
-		}
-		translate([face_hook_dim_1.x,0,0]) {
-			cube(size=face_hook_dim_2);
-			translate([0,0,face_hook_dim_2.z]) {
-				cube(size=face_hook_dim_3);
-				translate([face_hook_dim_3.x,0,0]) {
-					difference() {
-						cube(size=face_hook_dim_4);
-						translate(face_hook_slot_pos) {
-							cube(size=face_hook_slot_dim);
+	//difference() {
+		translate([jbox_dim.x/2 - face_hook_dim_1.x - face_hook_jbox_clearance - thickness,0,0]) {
+			if (!render_supports) {
+				cube(size=face_hook_dim_1);
+			}
+			translate([face_hook_dim_1.x,0,0]) {
+				cube(size=face_hook_dim_2);
+				translate([0,0,face_hook_dim_2.z]) {
+					cube(size=face_hook_dim_3);
+					translate([face_hook_dim_3.x,0,0]) {
+						difference() {
+							cube(size=face_hook_dim_4);
+							translate(face_hook_slot_pos) {
+								cube(size=face_hook_slot_dim);
+							}
 						}
 					}
 				}
 			}
 		}
-	}
+		// Cut holes for screw inserts
+		// rotate([0,180,0])
+		// 	translate([0,0,2 * -relay_pos.z - thickness])
+		// 		//translate([-jbox_dim.x/2,0,0]) 
+		// 		translate(relay_pos) {
+		// 			translate([0,0,-mounting_hole_depth]) {
+		// 				for(i = [0:len(relay_mounting_holes)-1]) {
+		// 					translate(relay_mounting_holes[i]) {
+		// 						mounting_stem(mounting_hole_depth + thickness, hole_r=0);
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+	//}
 }
 
 module placeholder_jbox() {
@@ -129,7 +159,7 @@ module placeholder_jbox() {
 
 module placeholder_board() {
 	rotate([0,180,0])
-		translate([-jbox_dim.x/2,0,2 * -relay_pos.z + mounting_hole_depth])
+		translate([-jbox_dim.x/2,0,2 * -relay_pos.z + relay_pcb_inset - relay_dim.z])
 			color("green") {
 				translate(relay_pos) {
 					difference() {
@@ -151,13 +181,24 @@ module relay_plate() {
 	rotate([0,180,0])
 		translate([0,0,2 * -relay_pos.z - thickness])
 			translate([-jbox_dim.x/2,0,0]) 
-			translate(relay_pos) {
-				cube(size=[relay_dim.x, relay_dim.y, thickness]);
-				for(i = [0:len(relay_mounting_holes)-1]) {
-					translate(relay_mounting_holes[i]) {
-						mounting_stem(mounting_hole_depth + thickness);
-					}
+			translate([relay_pos.x - relay_cover_thickness,relay_pos.y,relay_pos.z]) {
+				difference() {
+					cube(size=[relay_dim.x + (2 * relay_cover_thickness), relay_dim.y, thickness]);
+					// translate([0,0,-mounting_hole_depth]) {
+					// 	for(i = [0:len(relay_mounting_holes)-1]) {
+					// 		translate(relay_mounting_holes[i]) {
+					// 			mounting_stem(mounting_hole_depth + thickness, hole_r=0);
+					// 		}
+					// 	}
+					// }
 				}
+				// translate([0,0,-mounting_hole_depth]) {
+				// 	for(i = [0:len(relay_mounting_holes)-1]) {
+				// 		translate(relay_mounting_holes[i]) {
+				// 			mounting_stem(mounting_hole_depth + thickness);
+				// 		}
+				// 	}
+				// }
 			}
 }
 

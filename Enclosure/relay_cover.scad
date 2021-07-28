@@ -2,7 +2,8 @@ include <climate_enclosure.h>
 
 // ASSEMBLY
 
-translate([0,0,-relay_cover_height - mounting_hole_depth - relay_dim.z]) {
+// translate([0,0,-relay_cover_height - mounting_hole_depth - relay_dim.z]) {
+translate([0,0,-relay_cover_height]) {
 	translate([-jbox_dim.x/2,0,0]) {
 		translate(relay_pos) {
 			if (render_supports) {
@@ -17,26 +18,25 @@ translate([0,0,-relay_cover_height - mounting_hole_depth - relay_dim.z]) {
 module relay_asm() {
 	difference() {
 		sides();
+		conn_cuts();
 		mount_stem_negatives();
 		rc_label();
-		conn_cuts();
 	}
 	difference() {
 		mount_stems();
 		relay_outline();
 	}
-	// rc_label();
 }
 
 // MODULES
 
 module conn_cuts() {
 	for (i = [0:len(relay_conn_openings)-1]) {
-		translate([	relay_dim.x - relay_cover_thickness,
+		translate([	relay_dim.x -1,
 					relay_conn_openings[i][0],
 					relay_cover_height - relay_conn_height])
 		color("grey") {
-			cube(size=[	relay_cover_thickness,
+			cube(size=[	relay_cover_thickness + 2,
 						relay_conn_openings[i][1],
 						relay_conn_height]);
 		}
@@ -44,7 +44,7 @@ module conn_cuts() {
 }
 
 module rc_label() {
-	translate([0.5,10,relay_cover_height - label_size - 1])
+	translate([-0.5,10,relay_cover_height - label_size - 1])
 	rotate([90,0,90]) {
 		color("red") {
 			linear_extrude(1) {
@@ -65,7 +65,11 @@ module mount_stems() {
 				}
 			}
 		}
-		cube(size=[relay_dim.x,relay_dim.y,relay_cover_height]);
+		translate([-relay_sidewalls,-relay_sidewalls,0]) {
+			cube(size=[	relay_dim.x + (2 * relay_sidewalls),
+						relay_dim.y + (2 * relay_sidewalls),
+						relay_cover_height]);
+		}
 	}
 }
 
@@ -86,10 +90,10 @@ module mount_stem_right() {
 	difference() {
 		mount_stem_filled();
 		translate([0,0,-relay_cover_thickness]) {
-			linear_extrude(relay_cover_height) {
-				circle(r=relay_cover_mount_stem_r - relay_cover_thickness);
-				translate([0,-relay_cover_mount_stem_r + relay_cover_thickness,0]) {
-					square(size=[11, 2 * (relay_cover_mount_stem_r - relay_cover_thickness)]);
+			linear_extrude(relay_cover_height - relay_pcb_inset) {
+				circle(r=relay_cover_mount_stem_r - relay_cover_mount_thickness);
+				translate([0,-relay_cover_mount_stem_r + relay_cover_mount_thickness,0]) {
+					square(size=[11, 2 * (relay_cover_mount_stem_r - relay_cover_mount_thickness)]);
 				}
 			}
 		}
@@ -104,7 +108,7 @@ module mount_stem_left() {
 }
 
 module mount_stem_filled() {
-	linear_extrude(relay_cover_height) {
+	linear_extrude(relay_cover_height - relay_pcb_inset) {
 		circle(r=relay_cover_mount_stem_r);
 		translate([0,-relay_cover_mount_stem_r]) {
 			square(size=[10, 2 * relay_cover_mount_stem_r]);
@@ -114,14 +118,16 @@ module mount_stem_filled() {
 
 module sides() {
 	difference() {
-		cube(size=[	relay_dim.x,
-					relay_dim.y,
-					relay_cover_height]);
-		translate([	relay_cover_thickness,
-					relay_cover_thickness,
-					relay_cover_thickness]) {
-				cube(size=[	relay_dim.x - (2 * relay_cover_thickness),
-							relay_dim.y - (2 * relay_cover_thickness),
+		translate([-relay_sidewalls,-relay_sidewalls,0]) {
+			cube(size=[	relay_dim.x + (2 * relay_sidewalls),
+						relay_dim.y + (2 * relay_sidewalls),
+						relay_cover_height]);
+		}
+		translate([	0, 
+					0,
+					relay_cover_thickness]) { 
+				cube(size=[	relay_dim.x,
+							relay_dim.y,
 							relay_cover_height + 2]);
 		}
 		relay_outline();

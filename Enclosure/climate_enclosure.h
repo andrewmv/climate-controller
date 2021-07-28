@@ -4,14 +4,14 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-06 v1.5";
+label_text = "2021-07 v2.0";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
 render_placeholders = false;
 
 // Only render mesh overlap structures
-render_supports = false;
+render_supports = true;
 
 // Junction Box
 jbox_dim = [51,92,82];
@@ -77,7 +77,7 @@ esp_dim = [48,26,1.6];
 
 mounting_stem_r = 6;	
 mounting_hole_r = 2.5;		//for T6 screws
-mounting_hole_depth = 8;	//for 6mm screws
+mounting_hole_depth = 5;	//for 6mm screws
 mounting_stem_support_height = zdim;
 mounting_stem_support_base = zdim;
 mounting_stem_support_thickness = 2;
@@ -99,18 +99,20 @@ hook_cut_angle = 2;
 relay_dim = [41.58,62.22,1.6];
 relay_pos = [(jbox_dim.x / 2) - (relay_dim.x / 2),
 			 jbox_mount_dim.y + 2,
-			 -7];
+			 -9.5];
 relay_mounting_holes = [
 	[3.81,3.81],
 	[38.1,3.81],
 	[3.81,58.65],
 	[38.1,58.65]
 ];
-relay_cover_height = 10.0;
+relay_cover_height = 15.0;
 relay_cover_thickness = 1.5;
 relay_cover_mount_stem_r = 2.75;
-relay_cover_mount_hole_r = 1;
-relay_sidewalls = 1.5;
+relay_cover_mount_hole_r = 1.1;
+relay_cover_mount_thickness = 1;
+relay_sidewalls = 1.5;	 //TODO, merge this with thickness
+relay_pcb_inset = 3.5;
 
 // array of tuples, [pos,length]
 relay_conn_openings = [
@@ -118,7 +120,7 @@ relay_conn_openings = [
 	[32.0,4],
 	[42.5,4]
 ];
-relay_conn_height=3;
+relay_conn_height=relay_pcb_inset + 6;
 
 // DHT SENSOR
 dht_dim = [20.2,15.4,9.4];
