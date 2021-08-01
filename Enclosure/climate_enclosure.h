@@ -114,6 +114,7 @@ relay_cover_mount_hole_r = 1.1;
 relay_cover_mount_thickness = 1;
 relay_sidewalls = 1.5;	 //TODO, merge this with thickness
 relay_pcb_inset = 5.5;
+relay_threaded_insert_depth = 10;
 
 // array of tuples, [pos,length]
 relay_conn_openings = [

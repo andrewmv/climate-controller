@@ -56,14 +56,15 @@ module sidewalls() {
 }
 
 module relay_mounting_stems(r) {
-	translate([-jbox_dim.x/2,0,mounting_hole_depth + thickness]) {
+	//stem_depth = mounting_hole_depth + thickness - relay_pcb_inset + relay_dim.z;
+	stem_depth = relay_threaded_insert_depth + thickness - relay_pcb_inset;
+	translate([-jbox_dim.x/2,0,stem_depth]) { 
 		translate(relay_pos) {
 			for(i = [0:len(relay_mounting_holes)-1]) {
 				translate(relay_mounting_holes[i]) {
-					translate([0,0, - relay_pcb_inset + relay_dim.z]) {
+					translate([0,0, 0]) {
 						rotate([180,0,0]) {
-							mounting_stem(mounting_hole_depth + thickness - relay_pcb_inset + relay_dim.z,
-								hole_r = r);
+							mounting_stem(stem_depth, stem_r = 3.5, hole_r = r);
 						}
 					}
 				}
