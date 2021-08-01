@@ -4,14 +4,14 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-07 v2.0";
+label_text = "2021-07 v2.5";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
 render_placeholders = false;
 
 // Only render mesh overlap structures
-render_supports = true;
+render_supports = false;
 
 // Junction Box
 jbox_dim = [51,92,82];
@@ -33,6 +33,7 @@ dial_shaft_depth = 10;
 dial_shaft_r = 8;
 dial_hole_r = 6.5;
 dial_hole_cut = 4;
+dial_faceplate_tol = 1.0;
 
 // Faceplate
 thickness = 3;
@@ -108,11 +109,11 @@ relay_mounting_holes = [
 ];
 relay_cover_height = 15.0;
 relay_cover_thickness = 1.5;
-relay_cover_mount_stem_r = 2.75;
+relay_cover_mount_stem_r = 3.75;
 relay_cover_mount_hole_r = 1.1;
 relay_cover_mount_thickness = 1;
 relay_sidewalls = 1.5;	 //TODO, merge this with thickness
-relay_pcb_inset = 3.5;
+relay_pcb_inset = 5.5;
 
 // array of tuples, [pos,length]
 relay_conn_openings = [
@@ -120,7 +121,7 @@ relay_conn_openings = [
 	[32.0,4],
 	[42.5,4]
 ];
-relay_conn_height=relay_pcb_inset + 6;
+relay_conn_height=relay_pcb_inset;
 
 // DHT SENSOR
 dht_dim = [20.2,15.4,9.4];

@@ -2,11 +2,17 @@ include <climate_enclosure.h>
 
 //*** ASSEMBLY ***//
 
-difference() {
-	dial_solid();
-	dial_hollow();
+translate([0,pcb_pos.y + dial_pos.y + yoff, pcb_pos.z + dial_depth])
+	rotate([180,0,0])
+		dial_asm();
+
+module dial_asm() {
+	difference() {
+		dial_solid();
+		dial_hollow();
+	}
+	dial_shaft();
 }
-dial_shaft();
 
 //*** MODULES ***//
 

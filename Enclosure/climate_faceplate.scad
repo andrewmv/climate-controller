@@ -278,7 +278,7 @@ module brim() {
 module dial() {
 	translate([pcb_pos.x + dial_pos.x, pcb_pos.y + dial_pos.y, -1]) {
 		linear_extrude(zdim + 2) {
-			circle(dial_r);
+			circle(dial_r + dial_faceplate_tol);
 		}
 	}
 }
