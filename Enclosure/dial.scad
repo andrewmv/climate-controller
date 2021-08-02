@@ -26,7 +26,7 @@ module dial_shaft() {
 		linear_extrude(dial_shaft_depth + dial_walls + 1) {
 			difference() {
 				circle(r=dial_hole_r);
-				translate([-dial_shaft_r,dial_shaft_r - dial_hole_cut,0]) {
+				translate([-dial_hole_r,dial_hole_r - dial_hole_cut,0]) {
 					square(dial_shaft_r * 2);
 				}
 			}

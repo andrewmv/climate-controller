@@ -4,11 +4,11 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-07 v2.5";
+label_text = "2021-08 v2.6";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
-render_placeholders = true;
+render_placeholders = false;
 
 // Only render mesh overlap structures
 render_supports = false;
@@ -29,10 +29,10 @@ dial_r = 18;
 dial_bezel_r = 3;
 dial_depth = 10;
 dial_walls = 1.5;
-dial_shaft_depth = 10;
-dial_shaft_r = 8;
-dial_hole_r = 6.5;
-dial_hole_cut = 4;
+dial_shaft_depth = 5;
+dial_shaft_r = 10 / 2;
+dial_hole_r = 6.0 / 2;
+dial_hole_cut = (dial_hole_r * 2) - 4.5;
 dial_faceplate_tol = 1.0;
 
 // Faceplate
@@ -77,8 +77,9 @@ esp_pos = [23.43,19.59,pcb_dim.z+esp_header_dim.z];
 esp_dim = [48,26,1.6];
 
 mounting_stem_r = 6;	
-mounting_hole_r = 2.5;		//for T6 screws
-mounting_hole_depth = 5;	//for 6mm screws
+relay_mounting_stem_r = 4.75;	
+mounting_hole_r = 2.75;		//for M2 screws
+//mounting_hole_depth = 5;	//for 6mm long screws
 mounting_stem_support_height = zdim;
 mounting_stem_support_base = zdim;
 mounting_stem_support_thickness = 2;
@@ -110,11 +111,14 @@ relay_mounting_holes = [
 relay_cover_height = 15.0;
 relay_cover_thickness = 1.5;
 relay_cover_mount_stem_r = 3.75;
-relay_cover_mount_hole_r = 1.1;
+relay_cover_mount_hole_r = 1.9;
 relay_cover_mount_thickness = 1;
 relay_sidewalls = 1.5;	 //TODO, merge this with thickness
 relay_pcb_inset = 5.5;
-relay_threaded_insert_depth = 10;
+relay_threaded_insert_depth = 8; //For M2x8x3.5 inserts
+// NOTE: the following amount of the threaded brass insert should
+// be left protruding:
+// relay_pcb_inset - relay_dim.z = 5.5 - 1.6 = 3.9
 
 // array of tuples, [pos,length]
 relay_conn_openings = [
@@ -169,8 +173,8 @@ module mounting_stem(depth, stem_r = mounting_stem_r, hole_r = mounting_hole_r) 
 		linear_extrude(depth) {
 			circle(stem_r);
 		}
-		translate([0,0,depth - mounting_hole_depth]) {
-			linear_extrude(mounting_hole_depth + 1) {
+		translate([0,0,2]) {
+			linear_extrude(depth + 1) {
 				circle(hole_r);
 			}
 		}

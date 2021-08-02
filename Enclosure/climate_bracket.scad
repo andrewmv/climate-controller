@@ -19,7 +19,7 @@ if (render_supports) {
 			*color("pink")	sidewalls();
 			color("cyan")	face_hooks();
 		}
-		translate([0,0,0])
+		translate([0,0,-1])
 			relay_mounting_stems(0);
 	}
 	relay_mounting_stems(mounting_hole_r);
@@ -56,15 +56,14 @@ module sidewalls() {
 }
 
 module relay_mounting_stems(r) {
-	//stem_depth = mounting_hole_depth + thickness - relay_pcb_inset + relay_dim.z;
-	stem_depth = relay_threaded_insert_depth + thickness - relay_pcb_inset;
+	stem_depth = relay_threaded_insert_depth - relay_pcb_inset + relay_dim.z + 2;
 	translate([-jbox_dim.x/2,0,stem_depth]) { 
 		translate(relay_pos) {
 			for(i = [0:len(relay_mounting_holes)-1]) {
 				translate(relay_mounting_holes[i]) {
 					translate([0,0, 0]) {
 						rotate([180,0,0]) {
-							mounting_stem(stem_depth, stem_r = 3.5, hole_r = r);
+							mounting_stem(stem_depth, stem_r = relay_mounting_stem_r, hole_r = r);
 						}
 					}
 				}
