@@ -8,7 +8,7 @@ label_text = "2021-07 v2.5";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
-render_placeholders = false;
+render_placeholders = true;
 
 // Only render mesh overlap structures
 render_supports = false;
@@ -122,7 +122,7 @@ relay_conn_openings = [
 	[32.0,4],
 	[42.5,4]
 ];
-relay_conn_height=relay_pcb_inset;
+relay_conn_height=relay_pcb_inset - relay_dim.z;
 
 // DHT SENSOR
 dht_dim = [20.2,15.4,9.4];
