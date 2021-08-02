@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="71.587648"
+     inkscape:cx="71.944791"
      inkscape:cy="132.27481"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -53,7 +53,7 @@
      id="layer1">
     <path
        style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 9.4,291 H 28.9 V 272 H 34 v -14 0 -26 H 7.25 v 44 H 9.3 Z"
+       d="m 9.4,291 h 21 v -19 h 5.1 v -14 0 -26 H 7.25 v 44 H 9.3 Z"
        id="path3715"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccccc" />
