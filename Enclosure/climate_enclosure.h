@@ -4,7 +4,7 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-08 v2.6";
+label_text = "2021-08 v2.7";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
@@ -76,7 +76,7 @@ esp_header_offset = 6;
 esp_pos = [23.43,19.59,pcb_dim.z+esp_header_dim.z];
 esp_dim = [48,26,1.6];
 
-mounting_stem_r = 6;	
+mounting_stem_r = 4.75;	
 relay_mounting_stem_r = 4.75;	
 mounting_hole_r = 2.75;		//for M2 screws
 //mounting_hole_depth = 5;	//for 6mm long screws
