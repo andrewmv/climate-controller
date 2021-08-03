@@ -50,6 +50,10 @@ ydim = 115;
 zdim = display_thickness + display_window_depth;
 yoff = -10;
 
+// MAX IC keepout
+max_pos = [47.20,55.95]; // centered
+max_dim = [10,34,4];
+
 // Control PCB
 pcb_dim = [54.8,82.29,1.6];
 pcb_pos = [

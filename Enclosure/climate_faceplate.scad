@@ -33,6 +33,7 @@ module asm() {
 		faceplate();
 		dial();
 		display_well();
+		max_keepout();
 		for(i = [0:len(mounting_holes)-1]) {
 			translate([0,0,1])
 				translate(pcb_pos + mounting_holes[i]) {
@@ -121,6 +122,14 @@ module asm() {
 }
 
 //*** MODULES ***//
+
+module max_keepout() {
+	translate(pcb_pos) {
+		translate(max_pos) {
+			cube(size=max_dim, center=true);
+		}
+	}
+}
 
 module supports() {
 	// PCB Mounting stems
