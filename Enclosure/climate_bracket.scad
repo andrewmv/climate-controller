@@ -118,6 +118,13 @@ module face_hook_right() {
 							cube(size=face_hook_dim_4);
 							translate(face_hook_slot_pos) {
 								cube(size=face_hook_slot_dim);
+								translate([	0,
+											12,
+											-5.5]) {
+									rotate([45,0,0]) {
+										cube(size=10);
+									}
+								}
 							}
 						}
 					}
