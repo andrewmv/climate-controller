@@ -294,10 +294,12 @@ module dial() {
 
 module display_well() {
 	for (i = [0:len(display_pos)-1]) {
-		translate([pcb_pos.x + display_pos[i][x],
-				   pcb_pos.y + display_pos[i][y],
+		translate([pcb_pos.x + display_pos[i][x] - display_tolerance,
+				   pcb_pos.y + display_pos[i][y] - display_tolerance,
 				   -1]) {
-			cube(size=display_dim);
+			cube(size=[	display_dim.x + (2*display_tolerance),
+						display_dim.y + (2*display_tolerance),
+						display_dim.z]);;
 		}
 	}
 }
@@ -306,9 +308,13 @@ module display_channels() {
 	for (i = [0:len(display_pos)-1]) {
 		translate(pcb_pos + display_pos[i]) {
 			difference() {
-				cube(size=[display_dim.x,
-						   display_dim.y,
-						   display_window_depth]);;
+				translate([	-display_tolerance,
+							-display_tolerance,
+							0]) {
+					cube(size=[display_dim.x + (2*display_tolerance),
+							   display_dim.y + (2*display_tolerance),
+							   display_window_depth]);;
+				}
 				translate([diffuse_xoff1 + (tol/2),
 						   diffuse_yoff + (tol/2),
 						   display_window_thickness])

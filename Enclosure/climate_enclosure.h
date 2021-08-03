@@ -45,6 +45,7 @@ display_window_thickness = display_window_layers * printer_layer_height;
 display_window_depth = 1;
 display_pos = [[10.93,39.44],[10.93,59.76]];
 display_dim = [25.4,19,display_thickness];
+display_tolerance = 0.25;
 xdim = 75; //placeholder
 ydim = 115;
 zdim = display_thickness + display_window_depth;
