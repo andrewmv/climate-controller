@@ -89,12 +89,6 @@ mounting_stem_support_height = zdim;
 mounting_stem_support_base = zdim;
 mounting_stem_support_thickness = 2;
 
-// hook_pos = [
-// 	[18,50],
-// 	[18,80],
-// 	[69,40],
-// 	[69,80]
-// ];
 hook_dim = [3,20,30];
 hook_cut_pos = [-1,10,3];
 hook_cut_dim = [3, 10];
@@ -160,8 +154,8 @@ face_hook_dim_3 = [face_hook_overreach + face_hook_jbox_clearance,
 face_hook_slot_dim = [2 + 2, 15/2 + 1,3];
 face_hook_slot_pos = [-1,15/2,4];
 face_hook_pos = [
-	[2, 65],	// left side
-	[2, 65]		// right side
+	[12, 75],	// left side
+	[12, 75]		// right side
 ];
 face_hook_tab_dim = [3,
 					 8,
