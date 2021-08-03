@@ -36,6 +36,7 @@ dial_hole_cut = (dial_hole_r * 2) - 4.5;
 dial_faceplate_tol = 1.0;
 
 // Faceplate
+face_pos = [0, -5, 0];
 thickness = 3;
 corner_r = 10;
 brim_thickness = 13.5;
@@ -154,8 +155,8 @@ face_hook_dim_3 = [face_hook_overreach + face_hook_jbox_clearance,
 face_hook_slot_dim = [2 + 2, 15/2 + 1,3];
 face_hook_slot_pos = [-1,15/2,4];
 face_hook_pos = [
-	[12, 75],	// left side
-	[12, 75]		// right side
+	[7, 70],	// left side
+	[7, 70]	// right side
 ];
 face_hook_tab_dim = [3,
 					 8,
