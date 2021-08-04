@@ -245,7 +245,8 @@ module face_hook_tabs() {
 
 module face_hook_tab() {
 	tab_x = xdim - thickness - face_hook_tab_dim.x;
-	tab_z = face_hook_dim_2.z + face_hook_slot_pos.z + face_hook_tol;
+	tab_z = brim_thickness + face_hook_tol;
+	translate(-face_pos)
 	translate([tab_x, -yoff + face_hook_slot_pos.y, tab_z]) {
 		cube(size=face_hook_tab_dim);
 	}

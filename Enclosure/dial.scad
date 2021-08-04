@@ -3,7 +3,7 @@ include <climate_enclosure.h>
 //*** ASSEMBLY ***//
 
 translate(face_pos)
-translate([0,pcb_pos.y + dial_pos.y + yoff, pcb_pos.z + dial_depth])
+translate([0,pcb_pos.y + dial_pos.y + yoff, dial_depth + brim_thickness])
 	rotate([180,0,0])
 		dial_asm();
 

@@ -39,7 +39,8 @@ dial_faceplate_tol = 1.0;
 face_pos = [0, -5, 0];
 thickness = 3;
 corner_r = 10;
-brim_thickness = 13.5;
+// brim_thickness = 13.5;
+brim_thickness = 19.5;
 display_thickness = 8; 
 display_window_layers = 3;
 display_window_thickness = display_window_layers * printer_layer_height;
@@ -80,7 +81,7 @@ mounting_holes = [
 esp_header_dim = [3,38,3];
 esp_header_offset = 6;
 esp_pos = [23.43,19.59,pcb_dim.z+esp_header_dim.z];
-esp_dim = [48,26,1.6];
+esp_dim = [48,26,4];
 
 mounting_stem_r = 4.75;	
 relay_mounting_stem_r = 4.75;	
@@ -141,7 +142,7 @@ face_hook_tol = 0.25;
 face_hook_thickness = 3;
 face_hook_width = 15;
 face_hook_jbox_clearance = 2;
-face_hook_dim_4 = [ 2,15, brim_thickness - thickness];
+face_hook_dim_4 = [ 2,15, 10];
 face_hook_overreach = (xdim / 2) - (jbox_dim.x / 2) - face_hook_dim_4.x - face_hook_tol;
 face_hook_dim_1 = [12,
 				   face_hook_width, 
@@ -155,8 +156,8 @@ face_hook_dim_3 = [face_hook_overreach + face_hook_jbox_clearance,
 face_hook_slot_dim = [2 + 2, 15/2 + 1,3];
 face_hook_slot_pos = [-1,15/2,4];
 face_hook_pos = [
-	[7, 70],	// left side
-	[7, 70]	// right side
+	[8, 70],	// left side
+	[8, 70]	// right side
 ];
 face_hook_tab_dim = [3,
 					 8,
