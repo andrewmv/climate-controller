@@ -31,8 +31,8 @@ dial_depth = 10.5;
 dial_walls = 1.5;
 dial_shaft_depth = 5;
 dial_shaft_r = 10 / 2;
-dial_hole_r = 6.0 / 2;
-dial_hole_cut = (dial_hole_r * 2) - 4.5;
+dial_hole_r = 6.25 / 2;
+dial_hole_cut = (dial_hole_r * 2) - 4.75;
 dial_faceplate_tol = 1.0;
 
 // Faceplate
