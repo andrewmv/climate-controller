@@ -68,7 +68,7 @@ module asm() {
 	// DHT mounting stem
 	translate(dht_pos) {
 		difference() {
-			translate([dht_dim.x + 2.5, 
+			translate([dht_dim.x + 3.5, 
 					   dht_dim.y / 2, 
 					   0]) {
 				mounting_stem(6.5 - 1,

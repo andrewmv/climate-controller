@@ -19,6 +19,7 @@ if (render_supports) {
 			*color("pink")	sidewalls();
 			color("cyan")	face_hooks();
 		}
+		relay_passthrough();
 		translate([0,0,-1])
 			relay_mounting_stems(0);
 	}
@@ -77,7 +78,7 @@ module supports() {
 }
 
 module label() {
-	translate([	relay_pos.x + 10,
+	translate([	relay_pos.x + 8,
 				relay_pos.y + 10,
 				relay_pos.z+thickness])
 		rotate([0,0,90])
@@ -131,20 +132,6 @@ module face_hook_right() {
 				}
 			}
 		}
-		// Cut holes for screw inserts
-		// rotate([0,180,0])
-		// 	translate([0,0,2 * -relay_pos.z - thickness])
-		// 		//translate([-jbox_dim.x/2,0,0]) 
-		// 		translate(relay_pos) {
-		// 			translate([0,0,-mounting_hole_depth]) {
-		// 				for(i = [0:len(relay_mounting_holes)-1]) {
-		// 					translate(relay_mounting_holes[i]) {
-		// 						mounting_stem(mounting_hole_depth + thickness, hole_r=0);
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-	//}
 }
 
 module placeholder_jbox() {
@@ -189,24 +176,22 @@ module relay_plate() {
 		translate([0,0,2 * -relay_pos.z - thickness])
 			translate([-jbox_dim.x/2,0,0]) 
 			translate([relay_pos.x - relay_cover_thickness,relay_pos.y,relay_pos.z]) {
-				difference() {
-					cube(size=[relay_dim.x + (2 * relay_cover_thickness), relay_dim.y, thickness]);
-					// translate([0,0,-mounting_hole_depth]) {
-					// 	for(i = [0:len(relay_mounting_holes)-1]) {
-					// 		translate(relay_mounting_holes[i]) {
-					// 			mounting_stem(mounting_hole_depth + thickness, hole_r=0);
-					// 		}
-					// 	}
-					// }
-				}
-				// translate([0,0,-mounting_hole_depth]) {
-				// 	for(i = [0:len(relay_mounting_holes)-1]) {
-				// 		translate(relay_mounting_holes[i]) {
-				// 			mounting_stem(mounting_hole_depth + thickness);
-				// 		}
-				// 	}
-				// }
+				cube(size=[relay_dim.x + (2 * relay_cover_thickness), relay_dim.y, thickness]);
 			}
+}
+
+module relay_passthrough() {
+	rotate([0,180,0]) {
+		translate([0,0,2 * -relay_pos.z - thickness]) {
+			translate([-jbox_dim.x/2,0,0]) {
+				translate([relay_pos.x - relay_cover_thickness,relay_pos.y,relay_pos.z]) {
+					translate(relay_passthrough_pos) {
+						cube(size=relay_passthrough_dim, center=true);
+					}
+				}
+			}
+		}
+	}		
 }
 
 module jbox_mounting_ears() {

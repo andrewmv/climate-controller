@@ -4,7 +4,7 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-08 v2.8";
+label_text = "2021-08 v2.9";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
@@ -83,8 +83,8 @@ esp_header_offset = 6;
 esp_pos = [23.43,19.59,pcb_dim.z+esp_header_dim.z];
 esp_dim = [48,26,4];
 
-mounting_stem_r = 6.75/2;	
-relay_mounting_stem_r = 5.75/2;	
+mounting_stem_r = 8.75/2;	
+relay_mounting_stem_r = 7.75/2;	
 mounting_hole_r = 2.75/2;		//for M2 screws
 //mounting_hole_depth = 5;	//for 6mm long screws
 mounting_stem_support_height = zdim;
@@ -127,6 +127,8 @@ relay_conn_openings = [
 	[32.0,4],
 	[42.5,4]
 ];
+relay_passthrough_pos = [6.35,12.7];
+relay_passthrough_dim = [4,8,10];
 relay_conn_height=relay_pcb_inset - relay_dim.z;
 
 // DHT SENSOR
