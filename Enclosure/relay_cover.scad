@@ -25,10 +25,18 @@ module relay_asm() {
 		mount_stems();
 		relay_outline();
 	}
+	relay_front_cover();
 }
 
 // MODULES
 
+module relay_front_cover() {
+	translate([	0,
+				relay_dim.y,
+				relay_cover_height - relay_pcb_inset]) {
+		cube(size=[relay_dim.x,relay_cover_thickness,relay_pcb_inset]);
+	}
+}
 
 module rc_label() {
 	translate([-0.5,10,relay_cover_height - label_size - 1])
