@@ -122,11 +122,12 @@ relay_threaded_insert_depth = 8; //For M2x8x3.5 inserts
 // relay_pcb_inset - relay_dim.z = 5.5 - 1.6 = 3.9
 
 // array of tuples, [pos,length]
-relay_conn_openings = [
-	[8.0,9.0],
-	[32.0,4],
-	[42.5,4]
-];
+// relay_conn_openings = [
+// 	[8.0,9.0],
+// 	[32.0,4],
+// 	[42.5,4]
+// ];
+relay_actap_pos = [ [relay_dim.x-3.81,34.29],[relay_dim.x-3.81,44.45] ];
 relay_passthrough_pos = [6.35,12.7];
 relay_passthrough_dim = [4,8,10];
 relay_conn_height=relay_pcb_inset - relay_dim.z;

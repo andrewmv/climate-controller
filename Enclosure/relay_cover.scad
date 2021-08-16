@@ -18,7 +18,7 @@ translate([0,0,-relay_cover_height]) {
 module relay_asm() {
 	difference() {
 		sides();
-		conn_cuts();
+		// conn_cuts();
 		mount_stem_negatives();
 		rc_label();
 	}
@@ -30,18 +30,18 @@ module relay_asm() {
 
 // MODULES
 
-module conn_cuts() {
-	for (i = [0:len(relay_conn_openings)-1]) {
-		translate([	relay_dim.x -1,
-					relay_conn_openings[i][0],
-					relay_cover_height - relay_conn_height])
-		color("grey") {
-			cube(size=[	relay_cover_thickness + 2,
-						relay_conn_openings[i][1],
-						relay_conn_height]);
-		}
-	}
-}
+// module conn_cuts() {
+// 	for (i = [0:len(relay_conn_openings)-1]) {
+// 		translate([	relay_dim.x -1,
+// 					relay_conn_openings[i][0],
+// 					relay_cover_height - relay_conn_height])
+// 		color("grey") {
+// 			cube(size=[	relay_cover_thickness + 2,
+// 						relay_conn_openings[i][1],
+// 						relay_conn_height]);
+// 		}
+// 	}
+// }
 
 module rc_label() {
 	translate([-0.5,10,relay_cover_height - label_size - 1])
@@ -56,14 +56,25 @@ module rc_label() {
 
 module mount_stems() {
 	intersection() {
-		for (i = [0:len(relay_mounting_holes)-1]) {
-			translate(relay_mounting_holes[i]) {
-				if (relay_mounting_holes[i][x] > relay_dim.x / 2) {
-					mount_stem_right();
-				} else {
-					mount_stem_left();
+		union() {
+			for (i = [0:len(relay_mounting_holes)-1]) {
+				translate(relay_mounting_holes[i]) {
+					if (relay_mounting_holes[i][x] > relay_dim.x / 2) {
+						mount_stem_right();
+					} else {
+						mount_stem_left();
+					}
 				}
 			}
+			for (i = [0:len(relay_actap_pos)-1]) {
+				translate(relay_actap_pos[i]) {
+					if (relay_actap_pos[i][x] > relay_dim.x / 2) {
+						actap_right();
+					} else {
+						actap_left();
+					}
+				}
+			}	
 		}
 		translate([-relay_sidewalls,-relay_sidewalls,0]) {
 			cube(size=[	relay_dim.x + (2 * relay_sidewalls),
@@ -84,6 +95,33 @@ module mount_stem_negatives() {
 			}
 		}
 	}
+	for (i = [0:len(relay_actap_pos)-1]) {
+		translate(relay_actap_pos[i]) {
+			if (relay_actap_pos[i][x] > relay_dim.x / 2) {
+				mount_stem_filled();
+			} else {
+				mirror([1,0,0])
+					mount_stem_filled();
+			}
+		}
+	}
+}
+
+module actap_right() {
+	difference() {
+		mount_stem_filled();
+		linear_extrude(relay_cover_height - relay_pcb_inset) {
+			circle(r=relay_cover_mount_stem_r - relay_cover_mount_thickness);
+			translate([0,-relay_cover_mount_stem_r + relay_cover_mount_thickness,0]) {
+				square(size=[11, 2 * (relay_cover_mount_stem_r - relay_cover_mount_thickness)]);
+			}
+		}
+	}	
+}
+
+module actap_left() {
+	mirror([1,0,0]) 
+		actap_right();
 }
 
 module mount_stem_right() {
