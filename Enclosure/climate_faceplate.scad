@@ -68,12 +68,12 @@ module asm() {
 	// DHT mounting stem
 	translate(dht_pos) {
 		difference() {
-			translate([dht_dim.x + 3.5, 
+			translate([dht_dim.x - 25, 
 					   dht_dim.y / 2, 
 					   0]) {
-				mounting_stem(6.5 - 1,
-							  stem_r = 5,
-							  hole_r = 2.5);
+				mounting_stem(7.6,
+							  stem_r = 5.5/2,
+							  hole_r = 2.8/2);
 			}
 			cube(size=dht_dim);
 		}
@@ -143,11 +143,11 @@ module supports() {
 	// DHT mounting stem
 	translate(dht_pos) {
 		difference() {
-			translate([dht_dim.x + 2.5, 
+			translate([dht_dim.x - 25, 
 					   dht_dim.y / 2, 
 					   0]) {
-				mounting_stem(6.5 - 1,
-							  stem_r = 5,
+				mounting_stem(7.6,
+							  stem_r = 5.5/2,
 							  hole_r = 0);
 			}
 			cube(size=dht_dim);

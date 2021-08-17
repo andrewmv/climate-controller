@@ -133,7 +133,7 @@ relay_passthrough_dim = [4,8,10];
 relay_conn_height=relay_pcb_inset - relay_dim.z;
 
 // DHT SENSOR
-dht_dim = [20.2,15.4,9.4];
+dht_dim = [20.2,16.4,9.4];
 dht_pos = [xdim - dht_dim.x - thickness - 11,
 		   thickness, 
 		   thickness - 1];
