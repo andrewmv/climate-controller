@@ -39,10 +39,14 @@ ota:
 ### BEGIN GOOD STUFF ###
 
 globals:
-  id: system_on
-  type: bool
-  restore_value: true
-  initial_value: 'false'
+  - id: system_on
+    type: bool
+    restore_value: true
+    initial_value: 'false'
+  - id: display_enabled
+    type: bool
+    restore_value: false
+    initial_value: 'true'
 
 # MAX7219 Configuration
 spi:
@@ -56,22 +60,18 @@ display:
     num_chips: 1
     reverse_enable: true
     lambda: |-
-      it.printf(0, "%2.0f", id(test_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
-      if (id(system_on)) {
-        if (id(heater).state) {
-          it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
-        } else {
-          it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
-          it.printf(2, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
-          it.printf(4, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
+      if (id(display_enabled)) {
+        it.printf(0, "%2.0f", id(test_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
+        if (id(system_on)) {
+          if (id(heater).state) {
+            it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+          } else {
+            it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(2, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
+            it.printf(4, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
+          }
         }
-      //} else {
-        //it.printf(0, "--");
-        //it.printf(2, "--");
-        //it.printf(4, "--");
-        //it.printf(6, "--");
       }
-  # it.print("1.2.3.4.5.6.7.8.");
 
 sensor:
   - platform: dht
@@ -92,6 +92,7 @@ sensor:
     # min_value: 10
     # max_value: 37
     on_clockwise:
+      - script.execute: display_sleep_timer
       - lambda: |-
           if ((id(test_thermostat).mode == CLIMATE_MODE_HEAT) && (id(test_thermostat).target_temperature < 32.22)) {
             id(test_thermostat).target_temperature += 0.555;
@@ -99,6 +100,7 @@ sensor:
           }
       - script.execute: set_point_timer
     on_anticlockwise:
+      - script.execute: display_sleep_timer
       - lambda: |-
           if ((id(test_thermostat).mode == CLIMATE_MODE_HEAT) && (id(test_thermostat).target_temperature > 10.0)) {
             id(test_thermostat).target_temperature -= 0.555;
@@ -122,6 +124,7 @@ binary_sensor:
     filters:
       - invert: 
     on_click:
+      - script.execute: display_sleep_timer
       - lambda: |-
           auto call = id(test_thermostat).make_call();
           if (id(test_thermostat).mode == CLIMATE_MODE_HEAT) {
@@ -131,20 +134,44 @@ binary_sensor:
           }
           call.perform();
 
+output:
+  - platform: template
+    id: display_timer_enabled
+    type: binary
+    write_action:
+      - script.execute: display_sleep_timer
+
 switch:
   - platform: gpio
     pin: D8
     internal: true
     id: heater
+  - platform: output
+    name: "Test Thermostat Display Timer"
+    id: display_timer_switch
+    output: display_timer_enabled
 
 script:
   - id: set_point_timer
+    mode: restart
     then: 
       - delay: 2s
       # climate component doesn't support update(), so we submit an empty api call to update the frontend
       - lambda: |-
           auto call = id(test_thermostat).make_call();
           call.perform();
+  - id: display_sleep_timer
+    mode: restart
+    then: 
+      - lambda: |-
+          id(display_enabled) = true;
+          id(temp_display).update();
+      - delay: 5s
+      - lambda: |-
+          if (id(display_timer_switch).state) {
+            id(display_enabled) = false;
+            id(temp_display).update();
+          }
 
 climate:
   - platform: thermostat
