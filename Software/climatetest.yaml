@@ -150,6 +150,8 @@ switch:
     name: "Test Thermostat Display Timer"
     id: display_timer_switch
     output: display_timer_enabled
+  - platform: restart
+    name: "Test Thermostat Restart"
 
 script:
   - id: set_point_timer
