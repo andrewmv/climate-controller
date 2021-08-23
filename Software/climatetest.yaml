@@ -75,6 +75,7 @@ display:
 
 sensor:
   - platform: dht
+    model: DHT22
     pin: D1
     temperature:
       name: "Lab Temperature"
