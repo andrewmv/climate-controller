@@ -2,14 +2,15 @@ include <climate_enclosure.h>
 
 // ASSEMBLY
 
-// translate([0,0,-relay_cover_height - mounting_hole_depth - relay_dim.z]) {
 translate([0,0,-relay_cover_height]) {
-	translate([-jbox_dim.x/2,0,0]) {
-		translate(relay_pos) {
-			if (render_supports) {
+	translate([jbox_dim.x/2,0,0]) {
+		rotate([0,0,180]) {
+			translate([relay_pos.x, -relay_pos.y - relay_dim.y, relay_pos.z]) {
+				if (render_supports) {
 
-			} else {
-				relay_asm();
+				} else {
+					relay_asm();
+				}
 			}
 		}
 	}
