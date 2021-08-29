@@ -20,20 +20,24 @@ div_width = 0.5;
 div_reach = 2.8;
 div_pos = a+b+c+d+(e/2)-(div_width/2);
 
-translate([wt + div_pos, wt, 0]) {
-    cube(size=[div_width, div_reach, zdim]);
-}
+//psu_case();
 
-difference() {
-    cube(size=[ xdim + (2 * wt),
-                ydim + (2 * wt),
-                zdim + wt]);
-    translate([wt,wt,-1]) {
-        cube(size=[ xdim,
-                    ydim,
-                    zdim + 1]);
+module psu_case() {
+    translate([wt + div_pos, wt, 0]) {
+        cube(size=[div_width, div_reach, zdim]);
     }
-    conn_cuts();
+
+    difference() {
+        cube(size=[ xdim + (2 * wt),
+                    ydim + (2 * wt),
+                    zdim + wt]);
+        translate([wt,wt,-1]) {
+            cube(size=[ xdim,
+                        ydim,
+                        zdim + 1]);
+        }
+        conn_cuts();
+    }
 }
 
 module conn_cuts() {
