@@ -4,7 +4,7 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-08 v3.0";
+label_text = "2021-08 v3.1";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
@@ -40,7 +40,7 @@ face_pos = [0, -5, 0];
 thickness = 3;
 corner_r = 10;
 // brim_thickness = 13.5;
-brim_thickness = 19.5;
+brim_thickness = 19.5 + 5;
 display_thickness = 8; 
 display_window_layers = 3;
 display_window_thickness = display_window_layers * printer_layer_height;
