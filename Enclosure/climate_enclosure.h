@@ -102,7 +102,7 @@ hook_cut_angle = 2;
 relay_dim = [41.58,62.22,1.6];
 relay_pos = [(jbox_dim.x / 2) - (relay_dim.x / 2),
 			 jbox_mount_dim.y + 7,
-			 -9.5];
+			 -9.5+4];
 relay_mounting_holes = [
 	[3.81,3.81],
 	[38.1,3.81],
@@ -129,7 +129,7 @@ relay_threaded_insert_depth = 8; //For M2x8x3.5 inserts
 // ];
 relay_actap_pos = [ [relay_dim.x-3.81,34.29],[relay_dim.x-3.81,44.45] ];
 relay_passthrough_pos = [6.35,13.7];
-relay_passthrough_dim = [4,8,10];
+relay_passthrough_dim = [4+2,8+2,10];
 relay_conn_height=relay_pcb_inset - relay_dim.z;
 
 // DHT SENSOR
