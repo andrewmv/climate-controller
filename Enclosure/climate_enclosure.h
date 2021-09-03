@@ -4,7 +4,7 @@ printer_layer_height=0.1313;
 tol = 0.25;				// tolerance
 $fn = 80;				// facet count for curves
 
-label_text = "2021-08 v3.0";
+label_text = "2021-08 v3.1";
 label_size = 5;
 
 // Include non-printing placeholder compoenents
@@ -40,7 +40,7 @@ face_pos = [0, -5, 0];
 thickness = 3;
 corner_r = 10;
 // brim_thickness = 13.5;
-brim_thickness = 19.5;
+brim_thickness = 19.5 + 5;
 display_thickness = 8; 
 display_window_layers = 3;
 display_window_thickness = display_window_layers * printer_layer_height;
@@ -102,7 +102,7 @@ hook_cut_angle = 2;
 relay_dim = [41.58,62.22,1.6];
 relay_pos = [(jbox_dim.x / 2) - (relay_dim.x / 2),
 			 jbox_mount_dim.y + 7,
-			 -9.5];
+			 -9.5 - 5];
 relay_mounting_holes = [
 	[3.81,3.81],
 	[38.1,3.81],
