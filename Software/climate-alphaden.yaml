@@ -1,0 +1,204 @@
+esphome:
+  name: alpha_den_thermostat
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: !secret ssid  
+  password: !secret wappw
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Alpha Climate Fallback Hotspot"
+    password: !secret hotspotpw
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret apipw
+
+ota:
+  password: !secret apipw
+
+### PIN MAPPINGS ###
+
+# D0      - Unused
+# D1      - Thermosensor
+# D2      - Display Enable
+# D3(OUT) - Display Data
+# D4(OUT) - Display Clock
+# D5      - Encoder Switch
+# D6      - Encoder Clock
+# D7      - Encoder Signal
+# D8(OUT) - Heater Relay
+
+### BEGIN GOOD STUFF ###
+
+globals:
+  - id: system_on
+    type: bool
+    restore_value: true
+    initial_value: 'false'
+  - id: display_enabled
+    type: bool
+    restore_value: false
+    initial_value: 'true'
+
+# MAX7219 Configuration
+spi:
+  clk_pin: D4
+  mosi_pin: D3
+
+display:
+  - platform: max7219
+    id: temp_display
+    cs_pin: D2
+    num_chips: 1
+    reverse_enable: true
+    lambda: |-
+      if (id(display_enabled)) {
+        it.printf(0, "%2.0f", id(alpha_den_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
+        if (id(system_on)) {
+          if (id(heater).state) {
+            it.printf(6, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+          } else {
+            it.printf(6, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(2, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
+            it.printf(4, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
+          }
+        }
+      }
+
+sensor:
+  - platform: dht
+    model: DHT22
+    pin: D1
+    temperature:
+      name: "Alpha Den Thermostat Temperature"
+      id: alpha_den_sensor
+      unit_of_measurement: "°C"
+      filters:
+       - calibrate_polynomial:
+          degree: 2
+          datapoints:
+            - 21.89 -> 19.78
+            - 23.61 -> 20.72
+            - 25.61 -> 22.22
+            - 27.89 -> 22.11
+            - 28.28 -> 23.11
+    humidity:
+      name: "Alpha Den Thermostat Humidity"
+    update_interval: 10s
+
+  - platform: rotary_encoder
+    id: rot_enc
+    internal: true
+    # min_value: 10
+    # max_value: 37
+    on_clockwise:
+      - script.execute: display_sleep_timer
+      - lambda: |-
+          if ((id(alpha_den_thermostat).mode == CLIMATE_MODE_HEAT) && (id(alpha_den_thermostat).target_temperature < 32.22)) {
+            id(alpha_den_thermostat).target_temperature += 0.555;
+            id(temp_display).update();
+          }
+      - script.execute: set_point_timer
+    on_anticlockwise:
+      - script.execute: display_sleep_timer
+      - lambda: |-
+          if ((id(alpha_den_thermostat).mode == CLIMATE_MODE_HEAT) && (id(alpha_den_thermostat).target_temperature > 10.0)) {
+            id(alpha_den_thermostat).target_temperature -= 0.555;
+            id(temp_display).update();
+          }
+      - script.execute: set_point_timer
+    pin_a:
+      number: D6
+      mode: INPUT_PULLUP
+    pin_b: 
+      number: D7
+      mode: INPUT_PULLUP
+
+binary_sensor:
+  - platform: gpio
+    id: rot_sw
+    pin: 
+      number: D5
+      mode: INPUT_PULLUP
+    internal: true
+    filters:
+      - invert: 
+    on_click:
+      - script.execute: display_sleep_timer
+      - lambda: |-
+          auto call = id(alpha_den_thermostat).make_call();
+          if (id(alpha_den_thermostat).mode == CLIMATE_MODE_HEAT) {
+            call.set_mode("OFF");
+          } else {
+            call.set_mode("HEAT");
+          }
+          call.perform();
+
+output:
+  - platform: template
+    id: display_timer_enabled
+    type: binary
+    write_action:
+      - script.execute: display_sleep_timer
+
+switch:
+  - platform: gpio
+    pin: D8
+    internal: true
+    id: heater
+  - platform: output
+    name: "Alpha Den Thermostat Display Timer"
+    id: display_timer_switch
+    output: display_timer_enabled
+  - platform: restart
+    name: "Alpha Den Thermostat Restart"
+
+script:
+  - id: set_point_timer
+    mode: restart
+    then: 
+      - delay: 2s
+      # climate component doesn't support update(), so we submit an empty api call to update the frontend
+      - lambda: |-
+          auto call = id(alpha_den_thermostat).make_call();
+          call.perform();
+  - id: display_sleep_timer
+    mode: restart
+    then: 
+      - lambda: |-
+          id(display_enabled) = true;
+          id(temp_display).update();
+      - delay: 5s
+      - lambda: |-
+          if (id(display_timer_switch).state) {
+            id(display_enabled) = false;
+            id(temp_display).update();
+          }
+
+climate:
+  - platform: thermostat
+    name: Alpha Den Thermostat
+    id: alpha_den_thermostat
+    sensor: alpha_den_sensor
+    default_target_temperature_low: 23.33 
+    visual:
+      min_temperature: 10
+      max_temperature: 32.22
+      temperature_step: 1.0
+    heat_action:
+      - switch.turn_on: heater
+    idle_action:
+      - switch.turn_off: heater
+    heat_mode:
+      - lambda: 'id(system_on) = true;'
+    off_mode:
+      - lambda: 'id(system_on) = false;'
+
