@@ -188,6 +188,9 @@ climate:
     name: Goat Summit Thermostat
     id: goatsummit_thermostat
     sensor: goatsummit_sensor
+    min_idle_time: 10s
+    min_heating_off_time: 10s
+    min_heating_run_time: 10s
     default_target_temperature_low: 23.33 
     visual:
       min_temperature: 10

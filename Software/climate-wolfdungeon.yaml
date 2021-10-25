@@ -188,6 +188,9 @@ climate:
     name: Wolf Dungeon Thermostat
     id: wolfdungeon_thermostat
     sensor: wolfdungeon_sensor
+    min_idle_time: 10s
+    min_heating_off_time: 10s
+    min_heating_run_time: 10s
     default_target_temperature_low: 16.67 
     visual:
       min_temperature: 10

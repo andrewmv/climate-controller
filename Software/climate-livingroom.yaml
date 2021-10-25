@@ -188,6 +188,9 @@ climate:
     name: Living Room Thermostat
     id: livingroom_thermostat
     sensor: livingroom_sensor
+    min_idle_time: 10s
+    min_heating_off_time: 10s
+    min_heating_run_time: 10s
     default_target_temperature_low: 23.33 
     visual:
       min_temperature: 10
