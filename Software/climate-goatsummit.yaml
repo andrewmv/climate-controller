@@ -1,7 +1,16 @@
 esphome:
   name: goatsummit_thermostat
-  platform: ESP8266
+  on_boot:
+    then:
+      - lambda: |-
+          id(goatsummit_thermostat).target_temperature = id(last_known_target_temperature);
+
+esp8266:
   board: nodemcuv2
+  restore_from_flash: true
+
+preferences:
+  flash_write_interval: 5min
 
 wifi:
   ssid: !secret ssid  
@@ -45,8 +54,12 @@ globals:
     initial_value: 'false'
   - id: display_enabled
     type: bool
-    restore_value: false
+    restore_value: true
     initial_value: 'true'
+  - id: last_known_target_temperature
+    type: float
+    restore_value: true
+    initial_value: '23.33'
 
 # MAX7219 Configuration
 spi:
@@ -204,4 +217,6 @@ climate:
       - lambda: 'id(system_on) = true;'
     off_mode:
       - lambda: 'id(system_on) = false;'
+    target_temperature_change_action:
+      - lambda: id(last_known_target_temperature) = id(goatsummit_thermostat).target_temperature;
 
