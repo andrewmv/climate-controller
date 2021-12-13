@@ -1,3 +1,18 @@
+# Climate Controller
+# Andrew Villeneuve 2021
+
+### PIN MAPPINGS - BOARD REV 4.1F ###
+
+# D0      - Display Enable (Invert)
+# D1      - Thermosensor
+# D2      - Display Clock
+# D3(OUT) - Encoder Switch / Flash
+# D4(OUT) - Status LED (Invert)
+# D5      - Display Data
+# D6      - Encoder Signal
+# D7      - Encoder Clock
+# D8(OUT) - Heater Relay
+
 esphome:
   name: placeholderthermostat
   on_boot:
@@ -32,18 +47,6 @@ api:
 
 ota:
   password: !secret apipw
-
-### PIN MAPPINGS ###
-
-# D0      - Display Enable (Invert)
-# D1      - Thermosensor
-# D2      - Display Clock
-# D3(OUT) - Encoder Switch / Flash
-# D4(OUT) - Status LED (Invert)
-# D5      - Display Data
-# D6      - Encoder Signal
-# D7      - Encoder Clock
-# D8(OUT) - Heater Relay
 
 ### BEGIN GOOD STUFF ###
 
