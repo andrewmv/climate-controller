@@ -3,15 +3,15 @@
 
 ### PIN MAPPINGS - BOARD REV 4.1F ###
 
-# D0      - Display Enable (Invert)
-# D1      - Thermosensor
-# D2      - Display Clock
-# D3(OUT) - Encoder Switch / Flash
-# D4(OUT) - Status LED (Invert)
-# D5      - Display Data
-# D6      - Encoder Signal
-# D7      - Encoder Clock
-# D8(OUT) - Heater Relay
+# GPIO0       - Encoder Switch / Flash
+# GPIO2       - Status LED (Invert)
+# GPIO4       - Display Clock
+# GPIO5       - Thermosensor
+# GPIO12      - Encoder Signal
+# GPIO13      - Encoder Clock
+# GPIO14      - Display Data
+# GPIO15      - Heater Relay
+# GPIO16      - Display Enable (Invert)
 
 esphome:
   name: placeholderthermostat
@@ -21,7 +21,7 @@ esphome:
           id(placeholder_thermostat).target_temperature = id(last_known_target_temperature);
 
 esp8266:
-  board: nodemcuv2
+  board: esp12e   # 12E and 12F are pin-identical
   restore_from_flash: true
 
 preferences:
@@ -66,18 +66,18 @@ globals:
 
 status_led:
   pin:
-    number: D4
+    number: GPIO2
     inverted: true
 
 # MAX7219 Configuration
 spi:
-  clk_pin: D2
-  mosi_pin: D5
+  clk_pin: GPIO4
+  mosi_pin: GPIO14
 
 display:
   - platform: max7219
     id: temp_display
-    cs_pin: D0
+    cs_pin: GPIO16
     num_chips: 1
     reverse_enable: true
     lambda: |-
@@ -97,7 +97,7 @@ display:
 sensor:
   - platform: dht
     model: DHT22
-    pin: D1
+    pin: GPIO5
     temperature:
       name: "Placeholder Thermostat Temperature"
       id: placeholder_sensor
@@ -140,17 +140,17 @@ sensor:
           }
       - script.execute: set_point_timer
     pin_a:
-      number: D7
+      number: GPIO13
       mode: INPUT_PULLUP
     pin_b: 
-      number: D6
+      number: GPIO12
       mode: INPUT_PULLUP
 
 binary_sensor:
   - platform: gpio
     id: rot_sw
     pin: 
-      number: D3
+      number: GPIO0
       mode: INPUT_PULLUP
     internal: true
     filters:
@@ -175,7 +175,7 @@ output:
 
 switch:
   - platform: gpio
-    pin: D8
+    pin: GPIO15
     internal: true
     id: heater
   - platform: output
