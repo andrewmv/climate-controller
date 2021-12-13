@@ -1,0 +1,50 @@
+# GPIO Test
+# Andrew Villeneuve 2021
+
+### PIN MAPPINGS - BOARD REV 4.1F ###
+
+# GPIO2       - Status LED (Invert)
+# GPIO4       - Display Clock
+# GPIO14      - Display Data
+# GPIO16      - Display Enable (Invert)
+
+esphome:
+  name: gpiotest
+
+esp8266:
+  board: esp12e   # 12E and 12F are pin-identical
+
+wifi:
+  ssid: !secret ssid  
+  password: !secret wappw
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret apipw
+
+ota:
+  password: !secret apipw
+
+### BEGIN GOOD STUFF ###
+
+status_led:
+  pin:
+    number: GPIO2
+    inverted: true
+
+switch:
+  - platform: gpio
+    pin: GPIO4
+    name: "GPIO Test CLK"
+    id: gpio_test_4
+  - platform: gpio
+    pin: GPIO14
+    name: "GPIO Test DATA"
+    id: gpio_test_14
+  - platform: gpio
+    pin: GPIO16
+    name: "GPIO Test !CS"
+    id: gpio_test_16
