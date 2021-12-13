@@ -1,7 +1,16 @@
 esphome:
-  name: climatetest
-  platform: ESP8266
+  name: placeholderthermostat
+  on_boot:
+    then:
+      - lambda: |-
+          id(placeholder_thermostat).target_temperature = id(last_known_target_temperature);
+
+esp8266:
   board: nodemcuv2
+  restore_from_flash: true
+
+preferences:
+  flash_write_interval: 5min
 
 wifi:
   ssid: !secret ssid  
@@ -9,7 +18,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Climatetest Fallback Hotspot"
+    ssid: "PHT Fallback Hotspot"
     password: !secret hotspotpw
 
 captive_portal:
@@ -26,14 +35,14 @@ ota:
 
 ### PIN MAPPINGS ###
 
-# D0      - Unused
+# D0      - Display Enable (Invert)
 # D1      - Thermosensor
-# D2      - Display Enable
-# D3(OUT) - Display Data
-# D4(OUT) - Display Clock
-# D5      - Encoder Switch
-# D6      - Encoder Clock
-# D7      - Encoder Signal
+# D2      - Display Clock
+# D3(OUT) - Encoder Switch / Flash
+# D4(OUT) - Status LED (Invert)
+# D5      - Display Data
+# D6      - Encoder Signal
+# D7      - Encoder Clock
 # D8(OUT) - Heater Relay
 
 ### BEGIN GOOD STUFF ###
@@ -45,30 +54,39 @@ globals:
     initial_value: 'false'
   - id: display_enabled
     type: bool
-    restore_value: false
+    restore_value: true
     initial_value: 'true'
+  - id: last_known_target_temperature
+    type: float
+    restore_value: true
+    initial_value: '23.33'
+
+status_led:
+  pin:
+    number: D4
+    inverted: true
 
 # MAX7219 Configuration
 spi:
-  clk_pin: D4
-  mosi_pin: D3
+  clk_pin: D2
+  mosi_pin: D5
 
 display:
   - platform: max7219
     id: temp_display
-    cs_pin: D2
+    cs_pin: D0
     num_chips: 1
     reverse_enable: true
     lambda: |-
       if (id(display_enabled)) {
-        it.printf(0, "%2.0f", id(test_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
+        it.printf(0, "%2.0f", id(placeholder_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
         if (id(system_on)) {
           if (id(heater).state) {
-            it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(6, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
           } else {
-            it.printf(6, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
-            it.printf(2, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
-            it.printf(4, "%2.0f", id(test_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
+            it.printf(6, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(2, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
+            it.printf(4, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
           }
         }
       }
@@ -78,14 +96,24 @@ sensor:
     model: DHT22
     pin: D1
     temperature:
-      name: "Lab Temperature"
-      id: test_sensor
+      name: "Placeholder Thermostat Temperature"
+      id: placeholder_sensor
       unit_of_measurement: "°C"
-      # filters:
-        # - lambda: return x * (9.0/5.0) + 32.0;
+      filters:
+       - calibrate_polynomial:
+          degree: 2
+          datapoints:
+            - 21.89 -> 19.78
+            - 23.61 -> 20.72
+            - 25.61 -> 22.22
+            - 27.89 -> 22.11
+            - 28.28 -> 23.11
     humidity:
-      name: "Lab Humidity"
+      name: "Placeholder Thermostat Humidity"
     update_interval: 10s
+  - platform: wifi_signal
+    name: "Placeholder Thermostat Wifi"
+    update_interval: 60s
 
   - platform: rotary_encoder
     id: rot_enc
@@ -95,31 +123,31 @@ sensor:
     on_clockwise:
       - script.execute: display_sleep_timer
       - lambda: |-
-          if ((id(test_thermostat).mode == CLIMATE_MODE_HEAT) && (id(test_thermostat).target_temperature < 32.22)) {
-            id(test_thermostat).target_temperature += 0.555;
+          if ((id(placeholder_thermostat).mode == CLIMATE_MODE_HEAT) && (id(placeholder_thermostat).target_temperature < 32.22)) {
+            id(placeholder_thermostat).target_temperature += 0.555;
             id(temp_display).update();
           }
       - script.execute: set_point_timer
     on_anticlockwise:
       - script.execute: display_sleep_timer
       - lambda: |-
-          if ((id(test_thermostat).mode == CLIMATE_MODE_HEAT) && (id(test_thermostat).target_temperature > 10.0)) {
-            id(test_thermostat).target_temperature -= 0.555;
+          if ((id(placeholder_thermostat).mode == CLIMATE_MODE_HEAT) && (id(placeholder_thermostat).target_temperature > 10.0)) {
+            id(placeholder_thermostat).target_temperature -= 0.555;
             id(temp_display).update();
           }
       - script.execute: set_point_timer
     pin_a:
-      number: D6
+      number: D7
       mode: INPUT_PULLUP
     pin_b: 
-      number: D7
+      number: D6
       mode: INPUT_PULLUP
 
 binary_sensor:
   - platform: gpio
     id: rot_sw
     pin: 
-      number: D5
+      number: D3
       mode: INPUT_PULLUP
     internal: true
     filters:
@@ -127,8 +155,8 @@ binary_sensor:
     on_click:
       - script.execute: display_sleep_timer
       - lambda: |-
-          auto call = id(test_thermostat).make_call();
-          if (id(test_thermostat).mode == CLIMATE_MODE_HEAT) {
+          auto call = id(placeholder_thermostat).make_call();
+          if (id(placeholder_thermostat).mode == CLIMATE_MODE_HEAT) {
             call.set_mode("OFF");
           } else {
             call.set_mode("HEAT");
@@ -148,11 +176,9 @@ switch:
     internal: true
     id: heater
   - platform: output
-    name: "Test Thermostat Display Timer"
-    id: display_timer_switch
+    name: "Placeholder Thermostat Display Timer"
+    id: placeholder_display_timer_switch
     output: display_timer_enabled
-  - platform: restart
-    name: "Test Thermostat Restart"
 
 script:
   - id: set_point_timer
@@ -161,7 +187,7 @@ script:
       - delay: 2s
       # climate component doesn't support update(), so we submit an empty api call to update the frontend
       - lambda: |-
-          auto call = id(test_thermostat).make_call();
+          auto call = id(placeholder_thermostat).make_call();
           call.perform();
   - id: display_sleep_timer
     mode: restart
@@ -171,16 +197,19 @@ script:
           id(temp_display).update();
       - delay: 5s
       - lambda: |-
-          if (id(display_timer_switch).state) {
+          if (id(placeholder_display_timer_switch).state) {
             id(display_enabled) = false;
             id(temp_display).update();
           }
 
 climate:
   - platform: thermostat
-    name: Test thermostat
-    id: test_thermostat
-    sensor: test_sensor
+    name: Placeholder Thermostat
+    id: placeholder_thermostat
+    sensor: placeholder_sensor
+    min_idle_time: 10s
+    min_heating_off_time: 10s
+    min_heating_run_time: 10s
     default_target_temperature_low: 23.33 
     visual:
       min_temperature: 10
@@ -194,4 +223,6 @@ climate:
       - lambda: 'id(system_on) = true;'
     off_mode:
       - lambda: 'id(system_on) = false;'
+    target_temperature_change_action:
+      - lambda: id(last_known_target_temperature) = id(placeholder_thermostat).target_temperature;
 
