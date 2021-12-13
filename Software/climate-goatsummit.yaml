@@ -171,8 +171,8 @@ switch:
     name: "Goat Summit Thermostat Display Timer"
     id: display_timer_switch
     output: display_timer_enabled
-  - platform: restart
-    name: "Goat Summit Thermostat Restart"
+  # - platform: restart
+  #   name: "Goat Summit Thermostat Restart"
 
 script:
   - id: set_point_timer
