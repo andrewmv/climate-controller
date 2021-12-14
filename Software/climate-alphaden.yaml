@@ -1,3 +1,18 @@
+# Climate Controller - Alpha Den
+# Andrew Villeneuve 2021
+
+### PIN MAPPINGS - BOARD REV 4.1F ###
+
+# GPIO0       - Encoder Switch / Flash
+# GPIO2       - Status LED (Invert)
+# GPIO4       - Display Clock
+# GPIO5       - Thermosensor
+# GPIO12      - Encoder Signal
+# GPIO13      - Encoder Clock
+# GPIO14      - Display Data
+# GPIO15      - Heater Relay
+# GPIO16      - Display Enable (Invert)
+
 esphome:
   name: alpha_den_thermostat
   on_boot:
@@ -6,7 +21,7 @@ esphome:
           id(alpha_den_thermostat).target_temperature = id(last_known_target_temperature);
 
 esp8266:
-  board: nodemcuv2
+  board: esp12e   # 12E and 12F are pin-identical
   restore_from_flash: true
 
 preferences:
@@ -18,7 +33,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Alpha Climate Fallback Hotspot"
+    ssid: "Alpha Climate Fallback"
     password: !secret hotspotpw
 
 captive_portal:
@@ -32,18 +47,6 @@ api:
 
 ota:
   password: !secret apipw
-
-### PIN MAPPINGS ###
-
-# D0      - Unused
-# D1      - Thermosensor
-# D2      - Display Enable
-# D3(OUT) - Display Data
-# D4(OUT) - Display Clock
-# D5      - Encoder Switch
-# D6      - Encoder Clock
-# D7      - Encoder Signal
-# D8(OUT) - Heater Relay
 
 ### BEGIN GOOD STUFF ###
 
@@ -61,15 +64,20 @@ globals:
     restore_value: true
     initial_value: '23.33'
 
+status_led:
+  pin:
+    number: GPIO2
+    inverted: true
+
 # MAX7219 Configuration
 spi:
-  clk_pin: D4
-  mosi_pin: D3
+  clk_pin: GPIO4
+  mosi_pin: GPIO14
 
 display:
   - platform: max7219
     id: temp_display
-    cs_pin: D2
+    cs_pin: GPIO16
     num_chips: 1
     reverse_enable: true
     lambda: |-
@@ -89,7 +97,7 @@ display:
 sensor:
   - platform: dht
     model: DHT22
-    pin: D1
+    pin: GPIO5
     temperature:
       name: "Alpha Den Thermostat Temperature"
       id: alpha_den_sensor
@@ -106,6 +114,9 @@ sensor:
     humidity:
       name: "Alpha Den Thermostat Humidity"
     update_interval: 10s
+  - platform: wifi_signal
+    name: "Alpha Den Thermostat Wifi"
+    update_interval: 60s
 
   - platform: rotary_encoder
     id: rot_enc
@@ -129,17 +140,17 @@ sensor:
           }
       - script.execute: set_point_timer
     pin_a:
-      number: D6
+      number: GPIO13
       mode: INPUT_PULLUP
     pin_b: 
-      number: D7
+      number: GPIO12
       mode: INPUT_PULLUP
 
 binary_sensor:
   - platform: gpio
     id: rot_sw
     pin: 
-      number: D5
+      number: GPIO0
       mode: INPUT_PULLUP
     internal: true
     filters:
@@ -164,15 +175,13 @@ output:
 
 switch:
   - platform: gpio
-    pin: D8
+    pin: GPIO15
     internal: true
     id: heater
   - platform: output
     name: "Alpha Den Thermostat Display Timer"
-    id: display_timer_switch
+    id: alpha_den_display_timer_switch
     output: display_timer_enabled
-  - platform: restart
-    name: "Alpha Den Thermostat Restart"
 
 script:
   - id: set_point_timer
@@ -191,7 +200,7 @@ script:
           id(temp_display).update();
       - delay: 5s
       - lambda: |-
-          if (id(display_timer_switch).state) {
+          if (id(alpha_den_display_timer_switch).state) {
             id(display_enabled) = false;
             id(temp_display).update();
           }
