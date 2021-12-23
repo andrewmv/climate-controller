@@ -1,12 +1,27 @@
+# Climate Controller - Living Room
+# Andrew Villeneuve 2021
+
+### PIN MAPPINGS - BOARD REV 4.1F ###
+
+# GPIO0       - Encoder Switch / Flash
+# GPIO2       - Status LED (Invert)
+# GPIO4       - Display Clock
+# GPIO5       - Thermosensor
+# GPIO12      - Encoder Signal
+# GPIO13      - Encoder Clock
+# GPIO14      - Display Data
+# GPIO15      - Heater Relay
+# GPIO16      - Display Enable (Invert)
+
 esphome:
   name: livingroom_thermostat
   on_boot:
     then:
       - lambda: |-
-          id(livingroom_thermostat).target_temperature = id(last_known_target_temperature);
+          id(living_room_thermostat).target_temperature = id(last_known_target_temperature);
 
 esp8266:
-  board: nodemcuv2
+  board: esp12e   # 12E and 12F are pin-identical
   restore_from_flash: true
 
 preferences:
@@ -18,7 +33,7 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "LR Climate Fallback Hotspot"
+    ssid: "LRT Fallback Hotspot"
     password: !secret hotspotpw
 
 captive_portal:
@@ -32,18 +47,6 @@ api:
 
 ota:
   password: !secret apipw
-
-### PIN MAPPINGS ###
-
-# D0      - Unused
-# D1      - Thermosensor
-# D2      - Display Enable
-# D3(OUT) - Display Data
-# D4(OUT) - Display Clock
-# D5      - Encoder Switch
-# D6      - Encoder Clock
-# D7      - Encoder Signal
-# D8(OUT) - Heater Relay
 
 ### BEGIN GOOD STUFF ###
 
@@ -61,27 +64,32 @@ globals:
     restore_value: true
     initial_value: '23.33'
 
+status_led:
+  pin:
+    number: GPIO2
+    inverted: true
+
 # MAX7219 Configuration
 spi:
-  clk_pin: D4
-  mosi_pin: D3
+  clk_pin: GPIO4
+  mosi_pin: GPIO14
 
 display:
   - platform: max7219
     id: temp_display
-    cs_pin: D2
+    cs_pin: GPIO16
     num_chips: 1
     reverse_enable: true
     lambda: |-
       if (id(display_enabled)) {
-        it.printf(0, "%2.0f", id(livingroom_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
+        it.printf(0, "%2.0f", id(living_room_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
         if (id(system_on)) {
           if (id(heater).state) {
-            it.printf(6, "%2.0f", id(livingroom_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(6, "%2.0f", id(living_room_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
           } else {
-            it.printf(6, "%2.0f", id(livingroom_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
-            it.printf(2, "%2.0f", id(livingroom_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
-            it.printf(4, "%2.0f", id(livingroom_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
+            it.printf(6, "%2.0f", id(living_room_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(2, "%2.0f", id(living_room_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
+            it.printf(4, "%2.0f", id(living_room_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
           }
         }
       }
@@ -89,10 +97,10 @@ display:
 sensor:
   - platform: dht
     model: DHT22
-    pin: D1
+    pin: GPIO5
     temperature:
       name: "Living Room Thermostat Temperature"
-      id: livingroom_sensor
+      id: living_room_sensor
       unit_of_measurement: "°C"
       filters:
        - calibrate_polynomial:
@@ -106,6 +114,9 @@ sensor:
     humidity:
       name: "Living Room Thermostat Humidity"
     update_interval: 10s
+  - platform: wifi_signal
+    name: "Living Room Thermostat Wifi"
+    update_interval: 60s
 
   - platform: rotary_encoder
     id: rot_enc
@@ -115,31 +126,31 @@ sensor:
     on_clockwise:
       - script.execute: display_sleep_timer
       - lambda: |-
-          if ((id(livingroom_thermostat).mode == CLIMATE_MODE_HEAT) && (id(livingroom_thermostat).target_temperature < 32.22)) {
-            id(livingroom_thermostat).target_temperature += 0.555;
+          if ((id(living_room_thermostat).mode == CLIMATE_MODE_HEAT) && (id(living_room_thermostat).target_temperature < 32.22)) {
+            id(living_room_thermostat).target_temperature += 0.555;
             id(temp_display).update();
           }
       - script.execute: set_point_timer
     on_anticlockwise:
       - script.execute: display_sleep_timer
       - lambda: |-
-          if ((id(livingroom_thermostat).mode == CLIMATE_MODE_HEAT) && (id(livingroom_thermostat).target_temperature > 10.0)) {
-            id(livingroom_thermostat).target_temperature -= 0.555;
+          if ((id(living_room_thermostat).mode == CLIMATE_MODE_HEAT) && (id(living_room_thermostat).target_temperature > 10.0)) {
+            id(living_room_thermostat).target_temperature -= 0.555;
             id(temp_display).update();
           }
       - script.execute: set_point_timer
     pin_a:
-      number: D6
+      number: GPIO13
       mode: INPUT_PULLUP
     pin_b: 
-      number: D7
+      number: GPIO12
       mode: INPUT_PULLUP
 
 binary_sensor:
   - platform: gpio
     id: rot_sw
     pin: 
-      number: D5
+      number: GPIO0
       mode: INPUT_PULLUP
     internal: true
     filters:
@@ -147,8 +158,8 @@ binary_sensor:
     on_click:
       - script.execute: display_sleep_timer
       - lambda: |-
-          auto call = id(livingroom_thermostat).make_call();
-          if (id(livingroom_thermostat).mode == CLIMATE_MODE_HEAT) {
+          auto call = id(living_room_thermostat).make_call();
+          if (id(living_room_thermostat).mode == CLIMATE_MODE_HEAT) {
             call.set_mode("OFF");
           } else {
             call.set_mode("HEAT");
@@ -164,15 +175,13 @@ output:
 
 switch:
   - platform: gpio
-    pin: D8
+    pin: GPIO15
     internal: true
     id: heater
   - platform: output
     name: "Living Room Thermostat Display Timer"
-    id: display_timer_switch
+    id: living_room_display_timer_switch
     output: display_timer_enabled
-  - platform: restart
-    name: "Living Room Thermostat Restart"
 
 script:
   - id: set_point_timer
@@ -181,7 +190,7 @@ script:
       - delay: 2s
       # climate component doesn't support update(), so we submit an empty api call to update the frontend
       - lambda: |-
-          auto call = id(livingroom_thermostat).make_call();
+          auto call = id(living_room_thermostat).make_call();
           call.perform();
   - id: display_sleep_timer
     mode: restart
@@ -191,7 +200,7 @@ script:
           id(temp_display).update();
       - delay: 5s
       - lambda: |-
-          if (id(display_timer_switch).state) {
+          if (id(living_room_display_timer_switch).state) {
             id(display_enabled) = false;
             id(temp_display).update();
           }
@@ -199,8 +208,8 @@ script:
 climate:
   - platform: thermostat
     name: Living Room Thermostat
-    id: livingroom_thermostat
-    sensor: livingroom_sensor
+    id: living_room_thermostat
+    sensor: living_room_sensor
     min_idle_time: 10s
     min_heating_off_time: 10s
     min_heating_run_time: 10s
@@ -218,5 +227,5 @@ climate:
     off_mode:
       - lambda: 'id(system_on) = false;'
     target_temperature_change_action:
-      - lambda: id(last_known_target_temperature) = id(livingroom_thermostat).target_temperature;
+      - lambda: id(last_known_target_temperature) = id(living_room_thermostat).target_temperature;
 
