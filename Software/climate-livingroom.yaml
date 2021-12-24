@@ -117,7 +117,6 @@ sensor:
   - platform: wifi_signal
     name: "Living Room Thermostat Wifi"
     update_interval: 60s
-
   - platform: rotary_encoder
     id: rot_enc
     internal: true
@@ -145,6 +144,19 @@ sensor:
     pin_b: 
       number: GPIO12
       mode: INPUT_PULLUP
+  - platform: template
+    name: "Living Room Heater Power"
+    id: living_room_heater_power
+    unit_of_measurement: kW
+    lambda: |-
+      if (id(heater).state) {
+        return 0.5; // 2.1A, 500W for 120V heater
+      } else {
+        return 0.0;
+      }
+  - platform: total_daily_energy
+    name: "Living Room Heater Consumption"
+    power_id: living_room_heater_power
 
 binary_sensor:
   - platform: gpio
@@ -229,3 +241,6 @@ climate:
     target_temperature_change_action:
       - lambda: id(last_known_target_temperature) = id(living_room_thermostat).target_temperature;
 
+# Required for integrating kWh
+time:
+  - platform: sntp
