@@ -145,6 +145,19 @@ sensor:
     pin_b: 
       number: GPIO12
       mode: INPUT_PULLUP
+  - platform: template
+    name: "Goat Summit Heater Power"
+    id: goat_summit_heater_power
+    unit_of_measurement: kW
+    lambda: |-
+      if (id(heater).state) {
+        return 1.0; // 4.2A, 1kW for 240V heater
+      } else {
+        return 0.0;
+      }
+  - platform: total_daily_energy
+    name: "Goat Summit Heater Consumption"
+    power_id: goat_summit_heater_power
 
 binary_sensor:
   - platform: gpio
@@ -229,3 +242,6 @@ climate:
     target_temperature_change_action:
       - lambda: id(last_known_target_temperature) = id(goat_summit_thermostat).target_temperature;
 
+# Required for integrating kWh
+time:
+  - platform: sntp
