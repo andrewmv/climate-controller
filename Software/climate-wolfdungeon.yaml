@@ -106,7 +106,9 @@ sensor:
     humidity:
       name: "Wolf Dungeon Thermostat Humidity"
     update_interval: 10s
-
+  - platform: wifi_signal
+    name: "Wolf Dungeon Thermostat Wifi"
+    update_interval: 60s
   - platform: rotary_encoder
     id: rot_enc
     internal: true
@@ -134,6 +136,19 @@ sensor:
     pin_b: 
       number: D7
       mode: INPUT_PULLUP
+  - platform: template
+    name: "Wolf Dungeon Heater Power"
+    id: wolf_dungeon_heater_power
+    unit_of_measurement: kW
+    lambda: |-
+      if (id(heater).state) {
+        return 0.5; // 2.1A, 500W for 120V heater
+      } else {
+        return 0.0;
+      }     
+  - platform: total_daily_energy
+    name: "Wolf Dungeon Heater Consumption"
+    power_id: wolf_dungeon_heater_power
 
 binary_sensor:
   - platform: gpio
@@ -171,8 +186,6 @@ switch:
     name: "Wolf Dungeon Thermostat Display Timer"
     id: display_timer_switch
     output: display_timer_enabled
-  - platform: restart
-    name: "Wolf Dungeon Thermostat Restart"
 
 script:
   - id: set_point_timer
@@ -220,3 +233,6 @@ climate:
     target_temperature_change_action:
       - lambda: id(last_known_target_temperature) = id(wolfdungeon_thermostat).target_temperature;
 
+# Required for integrating kWh
+time:
+  - platform: sntp
