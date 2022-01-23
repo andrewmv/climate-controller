@@ -1,5 +1,6 @@
 # Climate Controller - Living Room
 # Andrew Villeneuve 2021
+# 2022-01-23
 
 ### PIN MAPPINGS - BOARD REV 4.1F ###
 
@@ -16,9 +17,12 @@
 esphome:
   name: livingroom_thermostat
   on_boot:
+    priority: 500
     then:
       - lambda: |-
           id(living_room_thermostat).target_temperature = id(last_known_target_temperature);
+          id(boot_complete) = true;
+
 
 esp8266:
   board: esp12e   # 12E and 12F are pin-identical
@@ -51,6 +55,12 @@ ota:
 ### BEGIN GOOD STUFF ###
 
 globals:
+    # We need to suppress calls to display.update() until the display has
+    # been fully set up, or we'll get segfaults
+  - id: boot_complete
+    type: bool
+    restore_value: false
+    initial_value: 'false'
   - id: system_on
     type: bool
     restore_value: true
@@ -209,12 +219,16 @@ script:
     then: 
       - lambda: |-
           id(display_enabled) = true;
-          id(temp_display).update();
+          if (id(boot_complete)) {
+            id(temp_display).update();
+          }
       - delay: 5s
       - lambda: |-
           if (id(living_room_display_timer_switch).state) {
             id(display_enabled) = false;
-            id(temp_display).update();
+            if (id(boot_complete)) {
+              id(temp_display).update();
+            }
           }
 
 climate:

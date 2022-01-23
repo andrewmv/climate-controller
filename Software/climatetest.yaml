@@ -3,29 +3,29 @@
 
 ### PIN MAPPINGS - BOARD REV 4.1F ###
 
-# GPIO0       - Encoder Switch / Flash
-# GPIO2       - Status LED (Invert)
-# GPIO4       - Display Clock
-# GPIO5       - Thermosensor
-# GPIO12      - Encoder Signal
-# GPIO13      - Encoder Clock
-# GPIO14      - Display Data
-# GPIO15      - Heater Relay
-# GPIO16      - Display Enable (Invert)
+# D0 / GPIO16      - Display Enable (Invert) -> Display Clock
+# D1 / GPIO5       - Thermosensor
+# D2 / GPIO4       - Display Clock -> Display Enable
+# D3 / GPIO0       - Encoder Switch / Flash
+# D4 / GPIO2 (OUT) - Status LED (Invert)
+# D5 / GPIO14      - Display Data
+# D6 / GPIO12      - Encoder Clock
+# D7 / GPIO13      - Encoder Data
+# D8 / GPIO15(OUT) - Heater Relay
 
 esphome:
   name: placeholderthermostat
-  on_boot:
-    then:
-      - lambda: |-
-          id(placeholder_thermostat).target_temperature = id(last_known_target_temperature);
+  # on_boot:
+  #   then:
+  #     - lambda: |-
+  #         id(placeholder_thermostat).target_temperature = id(last_known_target_temperature);
 
 esp8266:
-  board: esp12e   # 12E and 12F are pin-identical
-  restore_from_flash: true
+  board: nodemcuv2
+  restore_from_flash: false
 
 preferences:
-  flash_write_interval: 5min
+  # flash_write_interval: 1min
 
 wifi:
   ssid: !secret ssid  
@@ -53,31 +53,31 @@ ota:
 globals:
   - id: system_on
     type: bool
-    restore_value: true
+    restore_value: false
     initial_value: 'false'
   - id: display_enabled
     type: bool
-    restore_value: true
+    restore_value: false
     initial_value: 'true'
   - id: last_known_target_temperature
     type: float
-    restore_value: true
+    restore_value: false
     initial_value: '23.33'
 
 status_led:
   pin:
-    number: GPIO2
+    number: D4
     inverted: true
 
 # MAX7219 Configuration
 spi:
-  clk_pin: GPIO4
-  mosi_pin: GPIO14
+  clk_pin: D0
+  mosi_pin: D5
 
 display:
   - platform: max7219
     id: temp_display
-    cs_pin: GPIO16
+    cs_pin: D2
     num_chips: 1
     reverse_enable: true
     lambda: |-
@@ -97,7 +97,7 @@ display:
 sensor:
   - platform: dht
     model: DHT22
-    pin: GPIO5
+    pin: D1
     temperature:
       name: "Placeholder Thermostat Temperature"
       id: placeholder_sensor
@@ -117,7 +117,6 @@ sensor:
   - platform: wifi_signal
     name: "Placeholder Thermostat Wifi"
     update_interval: 60s
-
   - platform: rotary_encoder
     id: rot_enc
     internal: true
@@ -140,17 +139,31 @@ sensor:
           }
       - script.execute: set_point_timer
     pin_a:
-      number: GPIO13
+      number: D7
       mode: INPUT_PULLUP
     pin_b: 
-      number: GPIO12
+      number: D6
       mode: INPUT_PULLUP
+  - platform: template
+    name: "Placeholder Heater Power"
+    id: placeholder_heater_power
+    unit_of_measurement: kW
+    lambda: |-
+      if (id(heater).state) {
+        return 0.55; // 2.1A, 500W for 120V heater
+      } else {
+        return 0.0;
+      }     
+  # - platform: total_daily_energy
+  #   name: "Placeholder Heater Consumption"
+  #   power_id: placeholder_heater_power
+
 
 binary_sensor:
   - platform: gpio
     id: rot_sw
     pin: 
-      number: GPIO0
+      number: D3
       mode: INPUT_PULLUP
     internal: true
     filters:
@@ -175,7 +188,7 @@ output:
 
 switch:
   - platform: gpio
-    pin: GPIO15
+    pin: D8
     internal: true
     id: heater
   - platform: output
@@ -229,3 +242,6 @@ climate:
     target_temperature_change_action:
       - lambda: id(last_known_target_temperature) = id(placeholder_thermostat).target_temperature;
 
+# Required for integrating kWh
+# time:
+#   - platform: sntp

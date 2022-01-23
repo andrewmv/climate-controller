@@ -1,34 +1,40 @@
-# Climate Controller - Alpha Den
-# Andrew Villeneuve 2021
 # 2022-01-23
+# Stack traces seem to indicate boot failures are caused by update()
+# gettting called on the MAX7219 by the timer script before the
+# device has been set up.
+#
+# Adding a `boot_complete` global to check before attempting updates
 
-### PIN MAPPINGS - BOARD REV 4.1F ###
+### PIN MAPPINGS ###
 
-# GPIO0       - Encoder Switch / Flash
-# GPIO2       - Status LED (Invert)
-# GPIO4       - Display Clock
-# GPIO5       - Thermosensor
-# GPIO12      - Encoder Signal
-# GPIO13      - Encoder Clock
-# GPIO14      - Display Data
-# GPIO15      - Heater Relay
-# GPIO16      - Display Enable (Invert)
+# D0      - Unused
+# D1      - Thermosensor
+# D2      - Display Enable
+# D3(OUT) - Display Data
+# D4(OUT) - Display Clock
+# D5      - Encoder Switch
+# D6      - Encoder Clock
+# D7      - Encoder Signal
+# D8(OUT) - Heater Relay
+
+### BEGIN GOOD STUFF ###
 
 esphome:
-  name: alpha_den_thermostat
+  name: placeholderthermostat
   on_boot:
     priority: 500
     then:
       - lambda: |-
-          id(alpha_den_thermostat).target_temperature = id(last_known_target_temperature);
+          id(placeholder_thermostat).target_temperature = id(last_known_target_temperature);
           id(boot_complete) = true;
 
 esp8266:
-  board: esp12e   # 12E and 12F are pin-identical
+  board: nodemcu
   restore_from_flash: true
+  board_flash_mode: dio
 
 preferences:
-  flash_write_interval: 5min
+  flash_write_interval: 1min
 
 wifi:
   ssid: !secret ssid  
@@ -36,13 +42,15 @@ wifi:
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Alpha Climate Fallback"
+    ssid: "Lab Fallback Hotspot"
     password: !secret hotspotpw
 
 captive_portal:
 
 # Enable logging
 logger:
+# Uncomment to disable USB logging
+#  baud_rate: 0
 
 # Enable Home Assistant API
 api:
@@ -51,7 +59,6 @@ api:
 ota:
   password: !secret apipw
 
-### BEGIN GOOD STUFF ###
 
 globals:
     # We need to suppress calls to display.update() until the display has
@@ -73,32 +80,27 @@ globals:
     restore_value: true
     initial_value: '23.33'
 
-status_led:
-  pin:
-    number: GPIO2
-    inverted: true
-
 # MAX7219 Configuration
 spi:
-  clk_pin: GPIO4
-  mosi_pin: GPIO14
+  clk_pin: D4
+  mosi_pin: D3
 
 display:
   - platform: max7219
     id: temp_display
-    cs_pin: GPIO16
+    cs_pin: D2
     num_chips: 1
     reverse_enable: true
     lambda: |-
       if (id(display_enabled)) {
-        it.printf(0, "%2.0f", id(alpha_den_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
+        it.printf(0, "%2.0f", id(placeholder_thermostat).current_temperature * (9.0/5.0) + 32.0);  // Bottom Blue Display
         if (id(system_on)) {
           if (id(heater).state) {
-            it.printf(6, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(6, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
           } else {
-            it.printf(6, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
-            it.printf(2, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
-            it.printf(4, "%2.0f", id(alpha_den_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
+            it.printf(6, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Red Display
+            it.printf(2, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Blue Display
+            it.printf(4, "%2.0f", id(placeholder_thermostat).target_temperature * (9.0/5.0) + 32.0); // Top Green Display
           }
         }
       }
@@ -106,10 +108,10 @@ display:
 sensor:
   - platform: dht
     model: DHT22
-    pin: GPIO5
+    pin: D1
     temperature:
-      name: "Alpha Den Thermostat Temperature"
-      id: alpha_den_sensor
+      name: "Placeholder Thermostat Temperature"
+      id: placeholder_sensor
       unit_of_measurement: "°C"
       filters:
        - calibrate_polynomial:
@@ -121,10 +123,10 @@ sensor:
             - 27.89 -> 22.11
             - 28.28 -> 23.11
     humidity:
-      name: "Alpha Den Thermostat Humidity"
+      name: "Placeholder Thermostat Humidity"
     update_interval: 10s
   - platform: wifi_signal
-    name: "Alpha Den Thermostat Wifi"
+    name: "Placeholder Thermostat Wifi"
     update_interval: 60s
   - platform: rotary_encoder
     id: rot_enc
@@ -132,55 +134,55 @@ sensor:
     # min_value: 10
     # max_value: 37
     on_clockwise:
-      - script.execute: display_sleep_timer
+      # - script.execute: display_sleep_timer
       - lambda: |-
-          if ((id(alpha_den_thermostat).mode == CLIMATE_MODE_HEAT) && (id(alpha_den_thermostat).target_temperature < 32.22)) {
-            id(alpha_den_thermostat).target_temperature += 0.555;
+          if ((id(placeholder_thermostat).mode == CLIMATE_MODE_HEAT) && (id(placeholder_thermostat).target_temperature < 32.22)) {
+            id(placeholder_thermostat).target_temperature += 0.555;
             id(temp_display).update();
           }
       - script.execute: set_point_timer
     on_anticlockwise:
-      - script.execute: display_sleep_timer
+      # - script.execute: display_sleep_timer
       - lambda: |-
-          if ((id(alpha_den_thermostat).mode == CLIMATE_MODE_HEAT) && (id(alpha_den_thermostat).target_temperature > 10.0)) {
-            id(alpha_den_thermostat).target_temperature -= 0.555;
+          if ((id(placeholder_thermostat).mode == CLIMATE_MODE_HEAT) && (id(placeholder_thermostat).target_temperature > 10.0)) {
+            id(placeholder_thermostat).target_temperature -= 0.555;
             id(temp_display).update();
           }
       - script.execute: set_point_timer
     pin_a:
-      number: GPIO13
+      number: D6
       mode: INPUT_PULLUP
     pin_b: 
-      number: GPIO12
+      number: D7
       mode: INPUT_PULLUP
   - platform: template
-    name: "Alpha Den Heater Power"
-    id: alpha_den_heater_power
+    name: "Placeholder Heater Power"
+    id: placeholder__heater_power
     unit_of_measurement: kW
     lambda: |-
       if (id(heater).state) {
-        return 1.0; // 4.2A, 1kW for 240V heater
+        return 0.540; // 2.1A, 500W for 120V heater
       } else {
         return 0.0;
-      }
+      }     
   - platform: total_daily_energy
-    name: "Alpha Den Heater Consumption"
-    power_id: alpha_den_heater_power
+    name: "Placeholder Heater Consumption"
+    power_id: placeholder__heater_power
 
 binary_sensor:
   - platform: gpio
     id: rot_sw
     pin: 
-      number: GPIO0
+      number: D5
       mode: INPUT_PULLUP
     internal: true
     filters:
       - invert: 
     on_click:
-      - script.execute: display_sleep_timer
+      # - script.execute: display_sleep_timer
       - lambda: |-
-          auto call = id(alpha_den_thermostat).make_call();
-          if (id(alpha_den_thermostat).mode == CLIMATE_MODE_HEAT) {
+          auto call = id(placeholder_thermostat).make_call();
+          if (id(placeholder_thermostat).mode == CLIMATE_MODE_HEAT) {
             call.set_mode("OFF");
           } else {
             call.set_mode("HEAT");
@@ -196,13 +198,16 @@ output:
 
 switch:
   - platform: gpio
-    pin: GPIO15
+    pin: D8
     internal: true
     id: heater
   - platform: output
-    name: "Alpha Den Thermostat Display Timer"
-    id: alpha_den_display_timer_switch
+    name: "Placeholder Thermostat Display Timer"
+    id: display_timer_switch
     output: display_timer_enabled
+    # restore_mode: ALWAYS_OFF
+  - platform: restart
+    name: "Placeholder Thermostat Restart"
 
 script:
   - id: set_point_timer
@@ -211,7 +216,7 @@ script:
       - delay: 2s
       # climate component doesn't support update(), so we submit an empty api call to update the frontend
       - lambda: |-
-          auto call = id(alpha_den_thermostat).make_call();
+          auto call = id(placeholder_thermostat).make_call();
           call.perform();
   - id: display_sleep_timer
     mode: restart
@@ -223,7 +228,7 @@ script:
           }
       - delay: 5s
       - lambda: |-
-          if (id(alpha_den_display_timer_switch).state) {
+          if (id(display_timer_switch).state) {
             id(display_enabled) = false;
             if (id(boot_complete)) {
               id(temp_display).update();
@@ -232,9 +237,9 @@ script:
 
 climate:
   - platform: thermostat
-    name: Alpha Den Thermostat
-    id: alpha_den_thermostat
-    sensor: alpha_den_sensor
+    name: Placeholder Thermostat
+    id: placeholder_thermostat
+    sensor: placeholder_sensor
     min_idle_time: 10s
     min_heating_off_time: 10s
     min_heating_run_time: 10s
@@ -252,8 +257,8 @@ climate:
     off_mode:
       - lambda: 'id(system_on) = false;'
     target_temperature_change_action:
-      - lambda: id(last_known_target_temperature) = id(alpha_den_thermostat).target_temperature;
+      - lambda: id(last_known_target_temperature) = id(placeholder_thermostat).target_temperature;
 
 # Required for integrating kWh
 time:
-  - platform: sntp 
+  - platform: sntp
