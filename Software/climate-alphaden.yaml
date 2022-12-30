@@ -73,10 +73,10 @@ globals:
     restore_value: true
     initial_value: '23.33'
 
-status_led:
-  pin:
-    number: GPIO2
-    inverted: true
+# status_led:
+#   pin:
+#     inverted: True
+#     number: GPIO2
 
 # MAX7219 Configuration
 spi:
@@ -193,6 +193,11 @@ output:
     type: binary
     write_action:
       - script.execute: display_sleep_timer
+# Pull blue LED high to turn it off
+  - platform: gpio 
+    pin: GPIO2
+    inverted: true
+    id: status_led
 
 switch:
   - platform: gpio
