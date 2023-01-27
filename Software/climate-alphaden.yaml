@@ -73,6 +73,8 @@ globals:
     restore_value: true
     initial_value: '23.33'
 
+# If uncommenting status_led, you must comment the corresponding output block
+
 # status_led:
 #   pin:
 #     inverted: True
@@ -153,19 +155,6 @@ sensor:
     pin_b: 
       number: GPIO12
       mode: INPUT_PULLUP
-  - platform: template
-    name: "Alpha Den Heater Power"
-    id: alpha_den_heater_power
-    unit_of_measurement: kW
-    lambda: |-
-      if (id(heater).state) {
-        return 1.0; // 4.2A, 1kW for 240V heater
-      } else {
-        return 0.0;
-      }
-  - platform: total_daily_energy
-    name: "Alpha Den Heater Consumption"
-    power_id: alpha_den_heater_power
 
 binary_sensor:
   - platform: gpio
@@ -194,20 +183,27 @@ output:
     write_action:
       - script.execute: display_sleep_timer
 # Pull blue LED high to turn it off
+# Comment this out if enabling the status LED
   - platform: gpio 
     pin: GPIO2
     inverted: true
     id: status_led
 
 switch:
-  - platform: gpio
-    pin: GPIO15
-    internal: true
-    id: heater
   - platform: output
     name: "Alpha Den Thermostat Display Timer"
     id: alpha_den_display_timer_switch
     output: display_timer_enabled
+  - platform: template
+    internal: true
+    optimistic: true
+    id: heater
+    turn_on_action:
+      - homeassistant.service:
+          service: script.alpha_radiator_on
+    turn_off_action:
+      - homeassistant.service:
+          service: script.alpha_radiator_off
 
 script:
   - id: set_point_timer
@@ -259,6 +255,3 @@ climate:
     target_temperature_change_action:
       - lambda: id(last_known_target_temperature) = id(alpha_den_thermostat).target_temperature;
 
-# Required for integrating kWh
-time:
-  - platform: sntp 
