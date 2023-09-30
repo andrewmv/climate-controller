@@ -1,9 +1,11 @@
 esphome:
   name: wolfdungeon_thermostat
   on_boot:
+    priority: 500
     then:
       - lambda: |-
           id(wolfdungeon_thermostat).target_temperature = id(last_known_target_temperature);
+          id(boot_complete) = true;
 
 esp8266:
   board: nodemcuv2
@@ -48,6 +50,12 @@ ota:
 ### BEGIN GOOD STUFF ###
 
 globals:
+    # We need to suppress calls to display.update() until the display has
+    # been fully set up, or we'll get segfaults
+  - id: boot_complete
+    type: bool
+    restore_value: false
+    initial_value: 'false'
   - id: system_on
     type: bool
     restore_value: true
@@ -201,12 +209,16 @@ script:
     then: 
       - lambda: |-
           id(display_enabled) = true;
-          id(temp_display).update();
+          if (id(boot_complete)) {
+            id(temp_display).update();
+          }
       - delay: 5s
       - lambda: |-
           if (id(display_timer_switch).state) {
             id(display_enabled) = false;
-            id(temp_display).update();
+            if (id(boot_complete)) {
+              id(temp_display).update();
+            }
           }
 
 climate:
